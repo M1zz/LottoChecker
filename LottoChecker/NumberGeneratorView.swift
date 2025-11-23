@@ -8,7 +8,7 @@ struct NumberGeneratorView: View {
             VStack(spacing: 0) {
                 // 세그먼트 컨트롤
                 Picker("", selection: $selectedTab) {
-                    Text("번호생성").tag(0)
+                    Text("통계 기반 번호").tag(0)
                     Text("AI분석").tag(1)
                 }
                 .pickerStyle(.segmented)
@@ -27,7 +27,7 @@ struct NumberGeneratorView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }
-            .navigationTitle(selectedTab == 0 ? "로또 번호 생성기" : "AI 분석")
+            .navigationTitle(selectedTab == 0 ? "통계 기반 번호 추천" : "AI 분석")
             .navigationBarTitleDisplayMode(.large)
         }
     }

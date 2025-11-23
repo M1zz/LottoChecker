@@ -6,6 +6,8 @@ struct AdvancedAnalysisView: View {
     @State private var selectedAnalysisRange: Int = 100
     @State private var selectedTab = 0
     @State private var hasLoadedOnce = false
+    @State private var showingSaveAlert = false
+    @State private var savedMessage = ""
 
     var body: some View {
         ZStack {
@@ -39,6 +41,28 @@ struct AdvancedAnalysisView: View {
                 }
             }
         }
+        .overlay(
+            Group {
+                if showingSaveAlert {
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                            Text(savedMessage)
+                                .fontWeight(.semibold)
+                        }
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(10)
+                        .shadow(radius: 10)
+                        .padding(.bottom, 50)
+                    }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .animation(.spring(), value: showingSaveAlert)
+                }
+            }
+        )
         .onChange(of: isActive) { _, newValue in
             if newValue && !hasLoadedOnce {
                 // 탭이 활성화되고 한 번도 로드하지 않았으면 분석 실행
@@ -101,22 +125,26 @@ struct AdvancedAnalysisView: View {
 
     private var correlationAnalysisTab: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: 15) {
                 Text("번호 간 상관관계")
                     .font(.title2)
                     .fontWeight(.bold)
                     .padding(.top)
+                    .padding(.horizontal, 16)
 
                 // 가장 자주 함께 나오는 번호 쌍
                 topPairsCard
+                    .padding(.horizontal, 16)
 
                 // Hot & Cold 번호
                 hotColdCard
+                    .padding(.horizontal, 16)
 
                 // 번호 간격 분석
                 gapAnalysisCard
+                    .padding(.horizontal, 16)
             }
-            .padding()
+            .padding(.vertical, 10)
         }
     }
 
@@ -124,25 +152,30 @@ struct AdvancedAnalysisView: View {
 
     private var patternAnalysisTab: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: 15) {
                 Text("패턴 분석")
                     .font(.title2)
                     .fontWeight(.bold)
                     .padding(.top)
+                    .padding(.horizontal, 16)
 
                 // 홀짝 비율
                 oddEvenRatioCard
+                    .padding(.horizontal, 16)
 
                 // 구간별 분포
                 sectionDistributionCard
+                    .padding(.horizontal, 16)
 
                 // 번호 합계 분석
                 sumAnalysisCard
+                    .padding(.horizontal, 16)
 
                 // 연속 번호 분석
                 consecutiveAnalysisCard
+                    .padding(.horizontal, 16)
             }
-            .padding()
+            .padding(.vertical, 10)
         }
     }
 
@@ -150,19 +183,24 @@ struct AdvancedAnalysisView: View {
 
     private var recommendationTab: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: 15) {
                 Text("AI 추천 번호")
                     .font(.title2)
                     .fontWeight(.bold)
                     .padding(.top)
+                    .padding(.horizontal, 16)
 
                 Text("통계 분석 기반으로 최적화된 번호 조합을 추천합니다")
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
+                    .padding(.horizontal, 16)
 
                 ForEach(viewModel.recommendedNumbers.indices, id: \.self) { index in
-                    recommendedNumberCard(numbers: viewModel.recommendedNumbers[index], rank: index + 1)
+                    recommendedNumberCard(numbers: viewModel.recommendedNumbers[index], rank: index + 1) {
+                        saveNumber(viewModel.recommendedNumbers[index], rank: index + 1)
+                    }
+                    .padding(.horizontal, 16)
                 }
 
                 Button {
@@ -180,8 +218,9 @@ struct AdvancedAnalysisView: View {
                     .foregroundColor(.white)
                     .cornerRadius(15)
                 }
+                .padding(.horizontal, 16)
             }
-            .padding()
+            .padding(.vertical, 10)
         }
     }
 
@@ -496,7 +535,7 @@ struct AdvancedAnalysisView: View {
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
     }
 
-    private func recommendedNumberCard(numbers: [Int], rank: Int) -> some View {
+    private func recommendedNumberCard(numbers: [Int], rank: Int, onSave: @escaping () -> Void) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 HStack(spacing: 5) {
@@ -524,6 +563,23 @@ struct AdvancedAnalysisView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .padding(.top, 5)
+
+            // 저장 버튼
+            Button {
+                onSave()
+            } label: {
+                HStack {
+                    Image(systemName: "bookmark.fill")
+                    Text("이 번호 저장")
+                }
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(Color.purple.opacity(0.15))
+                .foregroundColor(.purple)
+                .cornerRadius(10)
+            }
         }
         .padding()
         .background(
@@ -607,6 +663,25 @@ struct AdvancedAnalysisView: View {
         }
 
         return reasons.joined(separator: " • ")
+    }
+
+    // 번호 저장 함수
+    private func saveNumber(_ numbers: [Int], rank: Int) {
+        let savedNumber = SavedLottoNumber(
+            numbers: numbers,
+            generationType: "AI추천",
+            memo: "추천 #\(rank) - 최적화 점수: \(Int(calculateOptimizationScore(numbers: numbers)))"
+        )
+
+        SavedNumbersManager.shared.save(savedNumber)
+
+        savedMessage = "번호가 저장되었습니다!"
+        showingSaveAlert = true
+
+        // 2초 후 자동으로 alert 숨기기
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            showingSaveAlert = false
+        }
     }
 }
 

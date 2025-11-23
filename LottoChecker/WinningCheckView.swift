@@ -22,33 +22,37 @@ struct WinningCheckView: View {
             )
             .ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: 20) {
-                    // 회차 선택
-                    roundSelectionCard
+            GeometryReader { geometry in
+                ScrollView {
+                    VStack(spacing: 15) {
+                        // 회차 선택
+                        roundSelectionCard
 
-                    // 번호 입력
-                    numberInputCard
+                        // 번호 입력
+                        numberInputCard
 
-                    // 확인 버튼
-                    if allNumbersEntered {
-                        checkButton
+                        // 확인 버튼
+                        if allNumbersEntered {
+                            checkButton
+                        }
+
+                        // 당첨 결과
+                        if let result = checkResult {
+                            resultCard(result: result)
+                        }
+
+                        // 저장된 번호들
+                        if !savedTickets.isEmpty {
+                            savedTicketsCard
+                        }
+
+                        // 과거 회차 당첨번호 확인 버튼
+                        pastLotteryButton
                     }
-
-                    // 당첨 결과
-                    if let result = checkResult {
-                        resultCard(result: result)
-                    }
-
-                    // 저장된 번호들
-                    if !savedTickets.isEmpty {
-                        savedTicketsCard
-                    }
-
-                    // 과거 회차 당첨번호 확인 버튼
-                    pastLotteryButton
+                    .padding(.vertical, 10)
+                    .frame(width: geometry.size.width * 11 / 12)
+                    .padding(.horizontal, (geometry.size.width * 1 / 24))
                 }
-                .padding()
             }
         }
         .sheet(isPresented: $showingNumberInput) {
@@ -197,7 +201,7 @@ struct WinningCheckView: View {
                     Spacer()
                 }
 
-                HStack(spacing: 8) {
+                HStack(spacing: 6) {
                     ForEach(0..<6) { index in
                         Button {
                             currentInputIndex = index
@@ -205,12 +209,12 @@ struct WinningCheckView: View {
                         } label: {
                             ZStack {
                                 if let number = userNumbers[index] {
-                                    numberBall(number: number, size: 50)
+                                    numberBall(number: number, size: 48)
                                 } else {
                                     Circle()
                                         .strokeBorder(Color.blue.opacity(0.3), lineWidth: 2)
                                         .background(Circle().fill(Color.blue.opacity(0.05)))
-                                        .frame(width: 50, height: 50)
+                                        .frame(width: 48, height: 48)
                                         .overlay(
                                             Text("\(index + 1)")
                                                 .font(.caption)
@@ -961,7 +965,7 @@ struct PastLotteryLookupView: View {
                 .ignoresSafeArea()
 
                 ScrollView {
-                    VStack(spacing: 25) {
+                    VStack(spacing: 15) {
                         // 회차 입력 섹션
                         VStack(spacing: 15) {
                             Text("조회할 회차를 입력하세요")
@@ -1013,6 +1017,7 @@ struct PastLotteryLookupView: View {
                         .background(Color.white.opacity(0.8))
                         .cornerRadius(16)
                         .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
+                        .padding(.horizontal, 16)
 
                         // 결과 표시
                         if viewModel.isLoading {
@@ -1020,7 +1025,7 @@ struct PastLotteryLookupView: View {
                                 .scaleEffect(1.5)
                                 .padding(.top, 50)
                         } else if let lotto = viewModel.lottoData {
-                            VStack(spacing: 20) {
+                            VStack(spacing: 15) {
                                 // 회차 정보
                                 VStack(spacing: 8) {
                                     Text("\(lotto.drwNo)회")
@@ -1032,6 +1037,7 @@ struct PastLotteryLookupView: View {
                                         .foregroundColor(.secondary)
                                 }
                                 .padding(.top)
+                                .padding(.horizontal, 16)
 
                                 // 당첨 번호
                                 VStack(spacing: 15) {
@@ -1065,6 +1071,7 @@ struct PastLotteryLookupView: View {
                                 .background(Color.white.opacity(0.8))
                                 .cornerRadius(16)
                                 .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
+                                .padding(.horizontal, 16)
 
                                 // 상세 정보
                                 VStack(alignment: .leading, spacing: 15) {
@@ -1082,6 +1089,7 @@ struct PastLotteryLookupView: View {
                                 .background(Color.white.opacity(0.8))
                                 .cornerRadius(16)
                                 .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
+                                .padding(.horizontal, 16)
 
                                 // 네비게이션 버튼
                                 HStack(spacing: 15) {
@@ -1123,10 +1131,11 @@ struct PastLotteryLookupView: View {
                                     }
                                     .disabled(viewModel.currentRound >= viewModel.latestRound)
                                 }
+                                .padding(.horizontal, 16)
                             }
                         }
                     }
-                    .padding()
+                    .padding(.vertical, 10)
                 }
             }
             .navigationTitle("과거 회차 조회")

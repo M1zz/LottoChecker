@@ -5,9 +5,10 @@ class LottoViewModel: ObservableObject {
     @Published var lottoData: LottoResponse?
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var errorSuggestion: String?
     @Published var currentRound: Int = 1
     @Published var latestRound: Int = 1
-    
+
     private let service = LottoService.shared
     
     init() {
@@ -21,6 +22,7 @@ class LottoViewModel: ObservableObject {
         AppLogger.debug("최신 회차 로드 시작", category: AppLogger.viewModel)
         isLoading = true
         errorMessage = nil
+        errorSuggestion = nil
 
         do {
             let latest = try await service.getLatestRound()
@@ -30,7 +32,7 @@ class LottoViewModel: ObservableObject {
             await fetchLotto(round: latest)
         } catch {
             AppLogger.error("최신 회차 로드 실패", error: error, category: AppLogger.viewModel)
-            errorMessage = error.localizedDescription
+            handleError(error)
             isLoading = false
         }
     }
@@ -44,6 +46,7 @@ class LottoViewModel: ObservableObject {
         AppLogger.debug("로또 데이터 가져오기: \(round)회", category: AppLogger.viewModel)
         isLoading = true
         errorMessage = nil
+        errorSuggestion = nil
 
         do {
             let data = try await service.fetchLottoData(round: round)
@@ -52,11 +55,21 @@ class LottoViewModel: ObservableObject {
             AppLogger.info("로또 \(round)회 데이터 로드 완료", category: AppLogger.viewModel)
         } catch {
             AppLogger.error("로또 \(round)회 데이터 로드 실패", error: error, category: AppLogger.viewModel)
-            errorMessage = error.localizedDescription
+            handleError(error)
             lottoData = nil
         }
 
         isLoading = false
+    }
+
+    private func handleError(_ error: Error) {
+        if let lottoError = error as? LottoError {
+            errorMessage = lottoError.errorDescription
+            errorSuggestion = lottoError.recoverySuggestion
+        } else {
+            errorMessage = error.localizedDescription
+            errorSuggestion = "문제가 지속되면 앱을 재시작해주세요."
+        }
     }
 
     func loadPreviousRound() async {

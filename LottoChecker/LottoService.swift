@@ -68,7 +68,27 @@ class LottoService {
         AppLogger.logNetworkRequest(url: url.absoluteString, method: "GET")
 
         let startTime = CFAbsoluteTimeGetCurrent()
-        let (data, response) = try await URLSession.shared.data(from: url)
+
+        // 네트워크 에러 처리
+        let (data, response): (Data, URLResponse)
+        do {
+            (data, response) = try await URLSession.shared.data(from: url)
+        } catch let error as URLError {
+            AppLogger.error("네트워크 에러", error: error, category: AppLogger.network)
+
+            switch error.code {
+            case .notConnectedToInternet, .networkConnectionLost, .dataNotAllowed:
+                throw LottoError.networkError
+            case .timedOut:
+                throw LottoError.timeoutError
+            default:
+                throw LottoError.invalidResponse
+            }
+        } catch {
+            AppLogger.error("알 수 없는 에러", error: error, category: AppLogger.network)
+            throw LottoError.invalidResponse
+        }
+
         let duration = CFAbsoluteTimeGetCurrent() - startTime
 
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -151,7 +171,9 @@ enum LottoError: LocalizedError {
     case invalidResponse
     case noData
     case invalidDate
-    
+    case networkError
+    case timeoutError
+
     var errorDescription: String? {
         switch self {
         case .invalidURL:
@@ -162,6 +184,25 @@ enum LottoError: LocalizedError {
             return "데이터를 찾을 수 없습니다."
         case .invalidDate:
             return "날짜 계산 오류입니다."
+        case .networkError:
+            return "인터넷 연결을 확인해주세요."
+        case .timeoutError:
+            return "연결 시간이 초과되었습니다."
+        }
+    }
+
+    var recoverySuggestion: String? {
+        switch self {
+        case .networkError:
+            return "Wi-Fi 또는 모바일 데이터 연결을 확인하고 다시 시도해주세요."
+        case .timeoutError:
+            return "네트워크 상태가 불안정합니다. 잠시 후 다시 시도해주세요."
+        case .noData:
+            return "해당 회차의 데이터가 아직 발표되지 않았을 수 있습니다."
+        case .invalidResponse:
+            return "서버가 일시적으로 응답하지 않습니다. 잠시 후 다시 시도해주세요."
+        default:
+            return "문제가 지속되면 앱을 재시작해주세요."
         }
     }
 }

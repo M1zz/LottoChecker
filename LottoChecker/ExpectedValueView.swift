@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ExpectedValueView: View {
     @StateObject private var viewModel = SimulationViewModel()
-    @State private var purchaseAmount: Int = 5000
+    @State private var simulationCount: Int = 5
     @State private var selectedRound: Int?
     @State private var showingRoundPicker = false
     @State private var simulationResult: SimulationResult?
@@ -11,13 +11,36 @@ struct ExpectedValueView: View {
     @State private var userNumbers: [Int?] = Array(repeating: nil, count: 6)
     @State private var showingNumberInput = false
     @State private var currentInputIndex = 0
+    @State private var generatedNumbers: [[Int]] = []
+    @State private var showGeneratedNumbers = true
+
+    // 화면 크기에 따른 레이아웃 조정
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
 
     var numberOfGames: Int {
-        purchaseAmount / 1000
+        simulationCount
     }
 
     var allNumbersEntered: Bool {
         userNumbers.allSatisfy { $0 != nil }
+    }
+
+    // 화면 크기별 설정
+    var isCompact: Bool {
+        horizontalSizeClass == .compact
+    }
+
+    var ballSize: CGFloat {
+        isCompact ? 28 : 35
+    }
+
+    var cardPadding: CGFloat {
+        isCompact ? 15 : 20
+    }
+
+    var spacing: CGFloat {
+        isCompact ? 20 : 25
     }
 
     var body: some View {
@@ -31,11 +54,11 @@ struct ExpectedValueView: View {
                 .ignoresSafeArea()
 
                 if viewModel.isLoading {
-                    ProgressView("시뮬레이션 중...")
+                    ProgressView("확률 계산 중...")
                         .scaleEffect(1.5)
                 } else {
                     ScrollView {
-                        VStack(spacing: 20) {
+                        VStack(spacing: spacing) {
                             // 회차 선택
                             roundSelectionCard
 
@@ -63,11 +86,11 @@ struct ExpectedValueView: View {
                                 detailedResultCard(result: result)
                             }
                         }
-                        .padding()
+                        .padding(cardPadding)
                     }
                 }
             }
-            .navigationTitle("가상 시뮬레이션")
+            .navigationTitle("확률 계산기")
             .navigationBarTitleDisplayMode(.large)
             .sheet(isPresented: $showingRoundPicker) {
                 roundPickerSheet
@@ -76,9 +99,16 @@ struct ExpectedValueView: View {
                 numberPickerSheet
             }
             .task {
-                // 최신 회차를 기본값으로 설정
+                // 최신 회차를 기본값으로 설정하고 자동 로드
                 if selectedRound == nil && viewModel.latestRound > 0 {
                     selectedRound = viewModel.latestRound
+                    await viewModel.loadRound(round: viewModel.latestRound)
+                }
+            }
+            .onAppear {
+                // 자동 모드인 경우 번호 미리 생성
+                if numberInputMethod == "자동" && generatedNumbers.isEmpty {
+                    generateNumbers()
                 }
             }
         }
@@ -87,10 +117,10 @@ struct ExpectedValueView: View {
     // MARK: - View Components
 
     private var roundSelectionCard: some View {
-        VStack(spacing: 15) {
+        VStack(spacing: isCompact ? 12 : 15) {
             HStack {
-                Text("시뮬레이션할 회차")
-                    .font(.headline)
+                Text("확률 계산할 회차")
+                    .font(isCompact ? .subheadline : .headline)
                     .fontWeight(.semibold)
 
                 Spacer()
@@ -101,17 +131,17 @@ struct ExpectedValueView: View {
                     HStack(spacing: 6) {
                         if let round = selectedRound {
                             Text("\(round)회")
-                                .font(.headline)
+                                .font(isCompact ? .subheadline : .headline)
                                 .fontWeight(.bold)
                         } else {
                             Text("선택하기")
-                                .font(.subheadline)
+                                .font(.caption)
                         }
                         Image(systemName: "chevron.down.circle.fill")
-                            .font(.title3)
+                            .font(isCompact ? .body : .title3)
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
+                    .padding(.horizontal, isCompact ? 10 : 12)
+                    .padding(.vertical, isCompact ? 6 : 8)
                     .background(Color.blue.opacity(0.15))
                     .foregroundColor(.blue)
                     .cornerRadius(10)
@@ -124,10 +154,10 @@ struct ExpectedValueView: View {
 
                 VStack(spacing: 8) {
                     Text(lotto.formattedDate)
-                        .font(.subheadline)
+                        .font(isCompact ? .caption : .subheadline)
                         .foregroundColor(.secondary)
 
-                    Text("시뮬레이션 준비 완료")
+                    Text("확률 계산 준비 완료")
                         .font(.caption)
                         .foregroundColor(.green)
                         .padding(.horizontal, 10)
@@ -137,43 +167,50 @@ struct ExpectedValueView: View {
                 }
             }
         }
-        .padding()
+        .padding(cardPadding)
         .background(Color.white.opacity(0.8))
-        .cornerRadius(16)
+        .cornerRadius(isCompact ? 12 : 16)
         .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
     }
 
     private var purchaseInputCard: some View {
-        VStack(spacing: 15) {
-            Text("가상 구매 설정")
-                .font(.title3)
+        VStack(spacing: isCompact ? 12 : 15) {
+            Text("가상 상황 설정")
+                .font(isCompact ? .headline : .title3)
                 .fontWeight(.semibold)
 
             Divider()
 
-            VStack(spacing: 15) {
+            VStack(spacing: isCompact ? 12 : 15) {
                 HStack {
-                    Text("구매 금액")
+                    Text("시뮬레이션 횟수")
+                        .font(isCompact ? .subheadline : .body)
                         .foregroundColor(.secondary)
                     Spacer()
-                    Text("\(formatNumber(purchaseAmount))원")
-                        .font(.title3)
+                    Text("\(simulationCount)회")
+                        .font(isCompact ? .headline : .title3)
                         .fontWeight(.bold)
                         .foregroundColor(.blue)
                 }
 
                 Slider(value: Binding(
-                    get: { Double(purchaseAmount) },
-                    set: { purchaseAmount = Int($0 / 1000) * 1000 }
-                ), in: 1000...100000, step: 1000)
+                    get: { Double(simulationCount) },
+                    set: { newValue in
+                        simulationCount = Int(newValue)
+                        // 횟수가 변경되면 자동 생성 번호 다시 생성
+                        if numberInputMethod == "자동" {
+                            generateNumbers()
+                        }
+                    }
+                ), in: 1...100, step: 1)
                 .accentColor(.blue)
 
                 HStack {
-                    Text("1,000원")
+                    Text("1회")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Spacer()
-                    Text("100,000원")
+                    Text("100회")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -182,29 +219,31 @@ struct ExpectedValueView: View {
             Divider()
 
             HStack {
-                Image(systemName: "ticket.fill")
+                Image(systemName: "chart.line.uptrend.xyaxis")
+                    .font(isCompact ? .body : .title3)
                     .foregroundColor(.orange)
-                Text("총 \(numberOfGames)게임")
+                Text("총 비용: \(formatNumber(numberOfGames * 1000))원")
+                    .font(isCompact ? .subheadline : .body)
                     .fontWeight(.semibold)
                 Spacer()
-                Text("(게임당 1,000원)")
+                Text("(회당 1,000원)")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            .padding()
+            .padding(isCompact ? 10 : 12)
             .background(Color.orange.opacity(0.1))
             .cornerRadius(10)
         }
-        .padding()
+        .padding(cardPadding)
         .background(Color.white.opacity(0.8))
-        .cornerRadius(16)
+        .cornerRadius(isCompact ? 12 : 16)
         .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
     }
 
     private var numberMethodCard: some View {
-        VStack(spacing: 15) {
+        VStack(spacing: isCompact ? 12 : 15) {
             Text("번호 생성 방식")
-                .font(.headline)
+                .font(isCompact ? .subheadline : .headline)
                 .fontWeight(.semibold)
 
             Divider()
@@ -215,16 +254,21 @@ struct ExpectedValueView: View {
                 Text("수동").tag("수동")
             }
             .pickerStyle(.segmented)
-            .onChange(of: numberInputMethod) { _, _ in
+            .onChange(of: numberInputMethod) { _, newValue in
                 // 방식 변경 시 초기화
                 userNumbers = Array(repeating: nil, count: 6)
                 simulationResult = nil
+
+                // 자동으로 변경 시 번호 생성
+                if newValue == "자동" {
+                    generateNumbers()
+                }
             }
 
             HStack {
                 Image(systemName: numberInputMethod == "자동" ? "dice.fill" : "hand.tap.fill")
                     .foregroundColor(numberInputMethod == "자동" ? .green : .blue)
-                Text(numberInputMethod == "자동" ? "매 게임마다 랜덤 번호 생성" : "동일한 번호로 시뮬레이션")
+                Text(numberInputMethod == "자동" ? "매번 다른 랜덤 번호 생성" : "동일한 번호로 확률 계산")
                     .font(.caption)
                     .foregroundColor(.secondary)
                 Spacer()
@@ -233,18 +277,65 @@ struct ExpectedValueView: View {
             .padding(.vertical, 8)
             .background((numberInputMethod == "자동" ? Color.green : Color.blue).opacity(0.1))
             .cornerRadius(10)
+
+            // 자동 생성 번호 표시
+            if numberInputMethod == "자동" && !generatedNumbers.isEmpty {
+                VStack(alignment: .leading, spacing: isCompact ? 8 : 10) {
+                    HStack {
+                        Text("생성된 번호 (\(generatedNumbers.count)개)")
+                            .font(isCompact ? .caption : .subheadline)
+                            .fontWeight(.semibold)
+
+                        Spacer()
+
+                        Button {
+                            withAnimation {
+                                showGeneratedNumbers.toggle()
+                            }
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: showGeneratedNumbers ? "eye.slash.fill" : "eye.fill")
+                                Text(showGeneratedNumbers ? "가리기" : "보기")
+                            }
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(.purple)
+                        }
+                    }
+
+                    if showGeneratedNumbers {
+                        VStack(spacing: isCompact ? 6 : 8) {
+                            ForEach(Array(generatedNumbers.enumerated()), id: \.offset) { index, numbers in
+                                HStack(spacing: isCompact ? 4 : 6) {
+                                    Text("\(index + 1)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .frame(width: isCompact ? 20 : 25)
+
+                                    ForEach(numbers, id: \.self) { number in
+                                        numberBall(number: number, size: ballSize)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(isCompact ? 10 : 12)
+                .background(Color.purple.opacity(0.05))
+                .cornerRadius(isCompact ? 10 : 12)
+            }
         }
-        .padding()
+        .padding(cardPadding)
         .background(Color.white.opacity(0.8))
-        .cornerRadius(16)
+        .cornerRadius(isCompact ? 12 : 16)
         .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
     }
 
     private var manualNumberInputCard: some View {
-        VStack(spacing: 15) {
+        VStack(spacing: isCompact ? 12 : 15) {
             HStack {
                 Text("번호 입력")
-                    .font(.headline)
+                    .font(isCompact ? .subheadline : .headline)
                     .fontWeight(.semibold)
                 Spacer()
                 Button {
@@ -264,23 +355,24 @@ struct ExpectedValueView: View {
             Divider()
                 .padding(.vertical, 4)
 
-            HStack(spacing: 8) {
+            HStack(spacing: isCompact ? 6 : 8) {
                 ForEach(0..<6) { index in
                     Button {
                         currentInputIndex = index
                         showingNumberInput = true
                     } label: {
                         ZStack {
+                            let manualBallSize: CGFloat = isCompact ? 40 : 50
                             if let number = userNumbers[index] {
-                                numberBall(number: number, size: 50)
+                                numberBall(number: number, size: manualBallSize)
                             } else {
                                 Circle()
                                     .strokeBorder(Color.blue.opacity(0.3), lineWidth: 2)
                                     .background(Circle().fill(Color.blue.opacity(0.05)))
-                                    .frame(width: 50, height: 50)
+                                    .frame(width: manualBallSize, height: manualBallSize)
                                     .overlay(
                                         Text("\(index + 1)")
-                                            .font(.caption)
+                                            .font(isCompact ? .caption2 : .caption)
                                             .foregroundColor(.gray)
                                     )
                             }
@@ -303,9 +395,9 @@ struct ExpectedValueView: View {
                 }
             }
         }
-        .padding()
+        .padding(cardPadding)
         .background(Color.white.opacity(0.8))
-        .cornerRadius(16)
+        .cornerRadius(isCompact ? 12 : 16)
         .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
     }
 
@@ -313,13 +405,15 @@ struct ExpectedValueView: View {
         Button {
             runSimulation()
         } label: {
-            HStack {
-                Image(systemName: "play.circle.fill")
-                Text("시뮬레이션 시작")
+            HStack(spacing: isCompact ? 6 : 8) {
+                Image(systemName: "function")
+                    .font(isCompact ? .body : .title3)
+                Text("확률 계산 시작")
+                    .font(isCompact ? .body : .headline)
                     .fontWeight(.semibold)
             }
             .frame(maxWidth: .infinity)
-            .padding()
+            .padding(isCompact ? 14 : 16)
             .background(
                 LinearGradient(
                     gradient: Gradient(colors: [Color.blue, Color.purple]),
@@ -328,82 +422,83 @@ struct ExpectedValueView: View {
                 )
             )
             .foregroundColor(.white)
-            .cornerRadius(15)
+            .cornerRadius(isCompact ? 12 : 15)
         }
     }
 
     private func resultSummaryCard(result: SimulationResult) -> some View {
-        VStack(spacing: 20) {
+        VStack(spacing: isCompact ? 15 : 20) {
             // 메인 결과
-            VStack(spacing: 10) {
+            VStack(spacing: isCompact ? 8 : 10) {
                 Text(result.profit >= 0 ? "수익 발생!" : "손실 발생")
-                    .font(.title2)
+                    .font(isCompact ? .title3 : .title2)
                     .fontWeight(.bold)
                     .foregroundColor(result.profit >= 0 ? .green : .red)
 
                 Text("\(result.profit >= 0 ? "+" : "")\(formatNumber(result.profit))원")
-                    .font(.system(size: 48, weight: .bold))
+                    .font(.system(size: isCompact ? 36 : 48, weight: .bold))
                     .foregroundColor(result.profit >= 0 ? .green : .red)
 
                 Text("수익률 \(String(format: "%.1f", result.returnRate))%")
-                    .font(.title3)
+                    .font(isCompact ? .headline : .title3)
                     .foregroundColor(.secondary)
             }
 
             Divider()
 
             // 통계 요약
-            HStack(spacing: 20) {
-                VStack {
+            HStack(spacing: isCompact ? 12 : 20) {
+                VStack(spacing: isCompact ? 4 : 6) {
                     Text("투자금")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Text("\(formatNumber(result.investment))원")
-                        .font(.headline)
+                        .font(isCompact ? .subheadline : .headline)
                 }
 
                 Divider()
-                    .frame(height: 40)
+                    .frame(height: isCompact ? 30 : 40)
 
-                VStack {
+                VStack(spacing: isCompact ? 4 : 6) {
                     Text("당첨금")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Text("\(formatNumber(result.totalPrize))원")
-                        .font(.headline)
+                        .font(isCompact ? .subheadline : .headline)
                         .foregroundColor(.green)
                 }
 
                 Divider()
-                    .frame(height: 40)
+                    .frame(height: isCompact ? 30 : 40)
 
-                VStack {
-                    Text("당첨 게임")
+                VStack(spacing: isCompact ? 4 : 6) {
+                    Text("당첨 횟수")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Text("\(result.winningGames)/\(result.totalGames)")
-                        .font(.headline)
+                        .font(isCompact ? .subheadline : .headline)
                         .foregroundColor(.blue)
                 }
             }
         }
-        .padding()
+        .padding(cardPadding)
         .background(Color.white.opacity(0.7))
-        .cornerRadius(20)
+        .cornerRadius(isCompact ? 16 : 20)
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
     }
 
     private func detailedResultCard(result: SimulationResult) -> some View {
-        VStack(alignment: .leading, spacing: 15) {
+        VStack(alignment: .leading, spacing: isCompact ? 12 : 15) {
             HStack {
                 Text("당첨 내역")
-                    .font(.title3)
+                    .font(isCompact ? .headline : .title3)
                     .fontWeight(.semibold)
                 Spacer()
                 Button {
                     showingResultDetail.toggle()
                 } label: {
                     Image(systemName: showingResultDetail ? "chevron.up" : "chevron.down")
+                        .font(isCompact ? .body : .title3)
                 }
             }
 
@@ -436,24 +531,24 @@ struct ExpectedValueView: View {
                 HStack {
                     Image(systemName: "xmark.circle")
                         .foregroundColor(.gray)
-                    Text("당첨된 게임이 없습니다")
+                    Text("당첨된 회차가 없습니다")
                         .foregroundColor(.secondary)
                 }
                 .padding(.vertical, 10)
             }
 
-            // 상세 게임 결과
+            // 상세 결과
             if showingResultDetail {
                 Divider()
 
-                Text("전체 게임 결과")
+                Text("전체 시뮬레이션 결과")
                     .font(.subheadline)
                     .fontWeight(.semibold)
 
                 ForEach(Array(result.gameResults.enumerated()), id: \.offset) { index, game in
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
-                            Text("게임 \(index + 1)")
+                            Text("\(index + 1)번째")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
 
@@ -480,42 +575,80 @@ struct ExpectedValueView: View {
                                         isMatched ?
                                         Circle()
                                             .strokeBorder(Color.green, lineWidth: 2)
-                                            .frame(width: 28, height: 28) : nil
+                                            .frame(width: ballSize, height: ballSize) : nil
                                     )
                             }
                         }
                     }
-                    .padding()
+                    .padding(isCompact ? 10 : 12)
                     .background(Color.white.opacity(0.5))
                     .cornerRadius(10)
                 }
             }
         }
-        .padding()
+        .padding(cardPadding)
         .background(Color.white.opacity(0.7))
-        .cornerRadius(20)
+        .cornerRadius(isCompact ? 16 : 20)
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
     }
 
     private var roundPickerSheet: some View {
         NavigationView {
-            VStack(spacing: 20) {
-                Text("시뮬레이션할 회차를 선택하세요")
+            VStack(spacing: 25) {
+                Text("확률 계산할 회차를 입력하세요")
                     .font(.headline)
                     .padding(.top)
 
-                Stepper(value: Binding(
-                    get: { selectedRound ?? viewModel.latestRound },
-                    set: { selectedRound = $0 }
-                ), in: 1...viewModel.latestRound) {
-                    Text("\(selectedRound ?? viewModel.latestRound)회")
-                        .font(.title)
-                        .fontWeight(.bold)
+                // 회차 직접 입력
+                VStack(spacing: 15) {
+                    TextField("회차 번호", value: Binding(
+                        get: { selectedRound ?? viewModel.latestRound },
+                        set: { selectedRound = $0 }
+                    ), format: .number)
+                        .keyboardType(.numberPad)
+                        .font(.system(size: 48, weight: .bold))
+                        .multilineTextAlignment(.center)
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(15)
+
+                    Text("1회 ~ \(viewModel.latestRound)회")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
                 .padding()
 
+                // 빠른 선택 버튼
+                VStack(spacing: 12) {
+                    Text("빠른 선택")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+
+                    HStack(spacing: 12) {
+                        QuickSelectButton(title: "최신", round: viewModel.latestRound) {
+                            selectedRound = viewModel.latestRound
+                        }
+
+                        QuickSelectButton(title: "10회 전", round: max(1, viewModel.latestRound - 10)) {
+                            selectedRound = max(1, viewModel.latestRound - 10)
+                        }
+
+                        QuickSelectButton(title: "50회 전", round: max(1, viewModel.latestRound - 50)) {
+                            selectedRound = max(1, viewModel.latestRound - 50)
+                        }
+
+                        QuickSelectButton(title: "100회 전", round: max(1, viewModel.latestRound - 100)) {
+                            selectedRound = max(1, viewModel.latestRound - 100)
+                        }
+                    }
+                }
+                .padding(.horizontal)
+
+                Spacer()
+
+                // 확인 버튼
                 Button {
-                    if let round = selectedRound {
+                    if let round = selectedRound, round >= 1 && round <= viewModel.latestRound {
                         Task {
                             await viewModel.loadRound(round: round)
                             showingRoundPicker = false
@@ -523,16 +656,18 @@ struct ExpectedValueView: View {
                         }
                     }
                 } label: {
-                    Text("선택")
+                    Text("확인")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue)
+                        .background(
+                            (selectedRound ?? 0) >= 1 && (selectedRound ?? 0) <= viewModel.latestRound ?
+                            Color.blue : Color.gray
+                        )
                         .foregroundColor(.white)
                         .cornerRadius(15)
                 }
                 .padding()
-
-                Spacer()
+                .disabled((selectedRound ?? 0) < 1 || (selectedRound ?? 0) > viewModel.latestRound)
             }
             .navigationTitle("회차 선택")
             .navigationBarTitleDisplayMode(.inline)
@@ -628,6 +763,15 @@ struct ExpectedValueView: View {
         return formatter.string(from: NSNumber(value: number)) ?? "\(number)"
     }
 
+    // 번호 생성 함수
+    private func generateNumbers() {
+        generatedNumbers = []
+        for _ in 0..<simulationCount {
+            let numbers = Array(1...45).shuffled().prefix(6).sorted()
+            generatedNumbers.append(Array(numbers))
+        }
+    }
+
     private func runSimulation() {
         guard let lotto = viewModel.lottoData else { return }
 
@@ -644,11 +788,12 @@ struct ExpectedValueView: View {
             // 수동 입력 번호 (수동 모드인 경우)
             let manualNumbers = numberInputMethod == "수동" ? userNumbers.compactMap { $0 }.sorted() : []
 
-            // 각 게임 시뮬레이션
-            for _ in 0..<numberOfGames {
+            // 각 회차 시뮬레이션
+            for index in 0..<numberOfGames {
                 let numbers: [Int]
                 if numberInputMethod == "자동" {
-                    numbers = generateRandomNumbers()
+                    // 미리 생성된 번호 사용
+                    numbers = index < generatedNumbers.count ? generatedNumbers[index] : generateRandomNumbers()
                 } else {
                     numbers = manualNumbers
                 }
@@ -664,11 +809,12 @@ struct ExpectedValueView: View {
                 }
             }
 
-            let profit = totalPrize - purchaseAmount
-            let returnRate = Double(profit) / Double(purchaseAmount) * 100
+            let investment = numberOfGames * 1000
+            let profit = totalPrize - investment
+            let returnRate = Double(profit) / Double(investment) * 100
 
             let result = SimulationResult(
-                investment: purchaseAmount,
+                investment: investment,
                 totalPrize: totalPrize,
                 profit: profit,
                 returnRate: returnRate,
@@ -787,6 +933,33 @@ class SimulationViewModel: ObservableObject {
             print("회차 로딩 실패: \(error)")
         }
         isLoading = false
+    }
+}
+
+// MARK: - Quick Select Button Component
+struct QuickSelectButton: View {
+    let title: String
+    let round: Int
+    let action: () -> Void
+
+    var body: some View {
+        Button {
+            action()
+        } label: {
+            VStack(spacing: 4) {
+                Text(title)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                Text("\(round)회")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+            .background(Color.blue.opacity(0.1))
+            .foregroundColor(.blue)
+            .cornerRadius(10)
+        }
     }
 }
 

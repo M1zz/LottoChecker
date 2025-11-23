@@ -7,63 +7,69 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		019BF61A066A4BFB9D9581CB /* AdvancedAnalysisViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C19C34F8864E2C9A7066FA /* AdvancedAnalysisViewModel.swift */; };
+		17C9B60606DF4487BFC5DF11 /* AnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4AFEC9B4D564C1FB4897A7F /* AnalysisView.swift */; };
+		22D23FEF57994554AA13A639 /* AdvancedAnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 446FA1C8FD27480EADA18F3C /* AdvancedAnalysisView.swift */; };
+		294E350D631E4FB2894CA888 /* RandomNumberGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B41959DF314A93AE2C6673 /* RandomNumberGeneratorView.swift */; };
+		325E1EA2DE56483FBF82FC35 /* CachedLottoData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5FEA30CC9B49788BEF4ED2 /* CachedLottoData.swift */; };
+		342E45EFAB46438787F963E4 /* WinningCheckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AAA5CA3ADB44EEAAD9A577 /* WinningCheckView.swift */; };
+		3DBFB333110C469C814B4485 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CD27D42A5642D98E18B7AB /* AppLogger.swift */; };
+		578E3E368B1C4CF8958FDA13 /* ExpectedValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32605FFCF36A41EEBF897F1E /* ExpectedValueView.swift */; };
+		624A15EBC7894001B6412A62 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC2D3B4A540492B8C03DC8E /* MainTabView.swift */; };
+		63FC3023D4F34275BFC8A382 /* LottoDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 708C411693EC44A0899B2B8E /* LottoDataStore.swift */; };
+		6E6BE43A7D3A4B9B9EC43BD9 /* PurchaseStatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B01361516C142619569FB5B /* PurchaseStatisticsView.swift */; };
+		713FCE5F9C684647ADD7C456 /* AdvancedAnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71357559F0884D9FA4009E7C /* AdvancedAnalysisView.swift */; };
+		759CA55160374CB1A488ACAB /* AdvancedAnalysisViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D204D6FB3F514E6CA2CE4EF3 /* AdvancedAnalysisViewModel.swift */; };
+		83163840E56D4F4D8D0E54EE /* PurchaseHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87AB91C07B14D648911AF16 /* PurchaseHistory.swift */; };
+		951830282BE847A4B83AC95F /* LottoCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A00AB2CDC364F7EB79A3762 /* LottoCacheManager.swift */; };
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* LottoCheckerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5A6B7C8D9E0F1A2 /* LottoCheckerApp.swift */; };
 		A2B3C4D5E6F7A8B9C0D1E2F3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A7B8C9D0E1F2A3 /* ContentView.swift */; };
 		A3B4C5D6E7F8A9B0C1D2E3F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3C4D5E6F7A8B9C0D1E2F3A4 /* Assets.xcassets */; };
 		A4B5C6D7E8F9A0B1C2D3E4F5 /* LottoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C5D6E7F8A9B0C1D2E3F4A5 /* LottoModel.swift */; };
 		A5B6C7D8E9F0A1B2C3D4E5F6 /* LottoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C6D7E8F9A0B1C2D3E4F5A6 /* LottoService.swift */; };
 		A6B7C8D9E0F1A2B3C4D5E6F7 /* LottoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C7D8E9F0A1B2C3D4E5F6A7 /* LottoViewModel.swift */; };
-		624A15EBC7894001B6412A62 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC2D3B4A540492B8C03DC8E /* MainTabView.swift */; };
-		294E350D631E4FB2894CA888 /* RandomNumberGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B41959DF314A93AE2C6673 /* RandomNumberGeneratorView.swift */; };
-		17C9B60606DF4487BFC5DF11 /* AnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4AFEC9B4D564C1FB4897A7F /* AnalysisView.swift */; };
-		578E3E368B1C4CF8958FDA13 /* ExpectedValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32605FFCF36A41EEBF897F1E /* ExpectedValueView.swift */; };
-		342E45EFAB46438787F963E4 /* WinningCheckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AAA5CA3ADB44EEAAD9A577 /* WinningCheckView.swift */; };
-		CBF4A877BAA34FAD81F4DBD1 /* QRCodeScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8990217E4A00430A9A3DC4C6 /* QRCodeScannerView.swift */; };
-		713FCE5F9C684647ADD7C456 /* AdvancedAnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71357559F0884D9FA4009E7C /* AdvancedAnalysisView.swift */; };
-		019BF61A066A4BFB9D9581CB /* AdvancedAnalysisViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C19C34F8864E2C9A7066FA /* AdvancedAnalysisViewModel.swift */; };
-		22D23FEF57994554AA13A639 /* AdvancedAnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 446FA1C8FD27480EADA18F3C /* AdvancedAnalysisView.swift */; };
-		759CA55160374CB1A488ACAB /* AdvancedAnalysisViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D204D6FB3F514E6CA2CE4EF3 /* AdvancedAnalysisViewModel.swift */; };
-		83163840E56D4F4D8D0E54EE /* PurchaseHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87AB91C07B14D648911AF16 /* PurchaseHistory.swift */; };
-		AC717842E8EB4ABC994C0F3E /* PurchaseHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4A0D6488A104AFCABCF189F /* PurchaseHistoryView.swift */; };
 		AB05143493AB4120A94F1566 /* AddPurchaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2BC4CB3EB641B78EEA1B06 /* AddPurchaseView.swift */; };
-		6E6BE43A7D3A4B9B9EC43BD9 /* PurchaseStatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B01361516C142619569FB5B /* PurchaseStatisticsView.swift */; };
+		AC717842E8EB4ABC994C0F3E /* PurchaseHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4A0D6488A104AFCABCF189F /* PurchaseHistoryView.swift */; };
 		C867EDAD6FEB4BB78A9F9A09 /* LottoMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DB91F3573124DAD8F637258 /* LottoMainView.swift */; };
+		CBF4A877BAA34FAD81F4DBD1 /* QRCodeScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8990217E4A00430A9A3DC4C6 /* QRCodeScannerView.swift */; };
 		CDBB4C0FC59F49359ADCB84D /* NumberGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F07E92F8624798A25178C7 /* NumberGeneratorView.swift */; };
-		3DBFB333110C469C814B4485 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CD27D42A5642D98E18B7AB /* AppLogger.swift */; };
-		325E1EA2DE56483FBF82FC35 /* CachedLottoData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5FEA30CC9B49788BEF4ED2 /* CachedLottoData.swift */; };
-		951830282BE847A4B83AC95F /* LottoCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A00AB2CDC364F7EB79A3762 /* LottoCacheManager.swift */; };
-		63FC3023D4F34275BFC8A382 /* LottoDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 708C411693EC44A0899B2B8E /* LottoDataStore.swift */; };
+		DD1234567890ABCDEF123456 /* DisclaimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1234567890ABCDEF123456 /* DisclaimerView.swift */; };
+		FF9876543210ABCDEF654321 /* SavedLottoNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9876543210ABCDEF654321 /* SavedLottoNumber.swift */; };
+		BB1111111111AAAAAAAAAAAA /* SavedNumbersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC2222222222BBBBBBBBBBBB /* SavedNumbersView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		00CD27D42A5642D98E18B7AB /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
+		0AC2D3B4A540492B8C03DC8E /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		0B01361516C142619569FB5B /* PurchaseStatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseStatisticsView.swift; sourceTree = "<group>"; };
+		32605FFCF36A41EEBF897F1E /* ExpectedValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpectedValueView.swift; sourceTree = "<group>"; };
+		3A00AB2CDC364F7EB79A3762 /* LottoCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottoCacheManager.swift; sourceTree = "<group>"; };
+		3DB91F3573124DAD8F637258 /* LottoMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottoMainView.swift; sourceTree = "<group>"; };
+		446FA1C8FD27480EADA18F3C /* AdvancedAnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedAnalysisView.swift; sourceTree = "<group>"; };
+		45B41959DF314A93AE2C6673 /* RandomNumberGeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomNumberGeneratorView.swift; sourceTree = "<group>"; };
+		52AAA5CA3ADB44EEAAD9A577 /* WinningCheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinningCheckView.swift; sourceTree = "<group>"; };
+		5D2BC4CB3EB641B78EEA1B06 /* AddPurchaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPurchaseView.swift; sourceTree = "<group>"; };
+		708C411693EC44A0899B2B8E /* LottoDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottoDataStore.swift; sourceTree = "<group>"; };
+		71357559F0884D9FA4009E7C /* AdvancedAnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedAnalysisView.swift; sourceTree = "<group>"; };
+		73883F8D31914FCD839C023D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		80C19C34F8864E2C9A7066FA /* AdvancedAnalysisViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedAnalysisViewModel.swift; sourceTree = "<group>"; };
+		8990217E4A00430A9A3DC4C6 /* QRCodeScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScannerView.swift; sourceTree = "<group>"; };
+		A87AB91C07B14D648911AF16 /* PurchaseHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseHistory.swift; sourceTree = "<group>"; };
 		B1C2D3E4F5A6B7C8D9E0F1A2 /* LottoCheckerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottoCheckerApp.swift; sourceTree = "<group>"; };
+		B1F07E92F8624798A25178C7 /* NumberGeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberGeneratorView.swift; sourceTree = "<group>"; };
 		B2C3D4E5F6A7B8C9D0E1F2A3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B3C4D5E6F7A8B9C0D1E2F3A4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B4AFEC9B4D564C1FB4897A7F /* AnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisView.swift; sourceTree = "<group>"; };
 		B4C5D6E7F8A9B0C1D2E3F4A5 /* LottoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottoModel.swift; sourceTree = "<group>"; };
 		B5C6D7E8F9A0B1C2D3E4F5A6 /* LottoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottoService.swift; sourceTree = "<group>"; };
 		B6C7D8E9F0A1B2C3D4E5F6A7 /* LottoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottoViewModel.swift; sourceTree = "<group>"; };
 		C1D2E3F4A5B6C7D8E9F0A1B2 /* LottoChecker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LottoChecker.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		0AC2D3B4A540492B8C03DC8E /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
-		45B41959DF314A93AE2C6673 /* RandomNumberGeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomNumberGeneratorView.swift; sourceTree = "<group>"; };
-		B4AFEC9B4D564C1FB4897A7F /* AnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisView.swift; sourceTree = "<group>"; };
-		32605FFCF36A41EEBF897F1E /* ExpectedValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpectedValueView.swift; sourceTree = "<group>"; };
-		52AAA5CA3ADB44EEAAD9A577 /* WinningCheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinningCheckView.swift; sourceTree = "<group>"; };
-		8990217E4A00430A9A3DC4C6 /* QRCodeScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScannerView.swift; sourceTree = "<group>"; };
-		73883F8D31914FCD839C023D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		71357559F0884D9FA4009E7C /* AdvancedAnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedAnalysisView.swift; sourceTree = "<group>"; };
-		80C19C34F8864E2C9A7066FA /* AdvancedAnalysisViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedAnalysisViewModel.swift; sourceTree = "<group>"; };
-		446FA1C8FD27480EADA18F3C /* AdvancedAnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedAnalysisView.swift; sourceTree = "<group>"; };
-		D204D6FB3F514E6CA2CE4EF3 /* AdvancedAnalysisViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedAnalysisViewModel.swift; sourceTree = "<group>"; };
-		A87AB91C07B14D648911AF16 /* PurchaseHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseHistory.swift; sourceTree = "<group>"; };
-		F4A0D6488A104AFCABCF189F /* PurchaseHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseHistoryView.swift; sourceTree = "<group>"; };
-		5D2BC4CB3EB641B78EEA1B06 /* AddPurchaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPurchaseView.swift; sourceTree = "<group>"; };
-		0B01361516C142619569FB5B /* PurchaseStatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseStatisticsView.swift; sourceTree = "<group>"; };
-		3DB91F3573124DAD8F637258 /* LottoMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottoMainView.swift; sourceTree = "<group>"; };
-		B1F07E92F8624798A25178C7 /* NumberGeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberGeneratorView.swift; sourceTree = "<group>"; };
-		00CD27D42A5642D98E18B7AB /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
 		CC5FEA30CC9B49788BEF4ED2 /* CachedLottoData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedLottoData.swift; sourceTree = "<group>"; };
-		3A00AB2CDC364F7EB79A3762 /* LottoCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottoCacheManager.swift; sourceTree = "<group>"; };
-		708C411693EC44A0899B2B8E /* LottoDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottoDataStore.swift; sourceTree = "<group>"; };
+		D204D6FB3F514E6CA2CE4EF3 /* AdvancedAnalysisViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedAnalysisViewModel.swift; sourceTree = "<group>"; };
+		AA9876543210ABCDEF654321 /* SavedLottoNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLottoNumber.swift; sourceTree = "<group>"; };
+		CC2222222222BBBBBBBBBBBB /* SavedNumbersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedNumbersView.swift; sourceTree = "<group>"; };
+		EE1234567890ABCDEF123456 /* DisclaimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisclaimerView.swift; sourceTree = "<group>"; };
+		F4A0D6488A104AFCABCF189F /* PurchaseHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseHistoryView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,21 +94,21 @@
 		F1A2B3C4D5E6F7A8B9C0D1E2 /* LottoChecker */ = {
 			isa = PBXGroup;
 			children = (
-								71357559F0884D9FA4009E7C /* AdvancedAnalysisView.swift */,
+				71357559F0884D9FA4009E7C /* AdvancedAnalysisView.swift */,
 				80C19C34F8864E2C9A7066FA /* AdvancedAnalysisViewModel.swift */,
-								446FA1C8FD27480EADA18F3C /* AdvancedAnalysisView.swift */,
+				446FA1C8FD27480EADA18F3C /* AdvancedAnalysisView.swift */,
 				D204D6FB3F514E6CA2CE4EF3 /* AdvancedAnalysisViewModel.swift */,
 				B1C2D3E4F5A6B7C8D9E0F1A2 /* LottoCheckerApp.swift */,
 				B2C3D4E5F6A7B8C9D0E1F2A3 /* ContentView.swift */,
 				B4C5D6E7F8A9B0C1D2E3F4A5 /* LottoModel.swift */,
 				B5C6D7E8F9A0B1C2D3E4F5A6 /* LottoService.swift */,
 				B6C7D8E9F0A1B2C3D4E5F6A7 /* LottoViewModel.swift */,
-								0AC2D3B4A540492B8C03DC8E /* MainTabView.swift */,
+				0AC2D3B4A540492B8C03DC8E /* MainTabView.swift */,
 				45B41959DF314A93AE2C6673 /* RandomNumberGeneratorView.swift */,
 				B4AFEC9B4D564C1FB4897A7F /* AnalysisView.swift */,
 				32605FFCF36A41EEBF897F1E /* ExpectedValueView.swift */,
 				52AAA5CA3ADB44EEAAD9A577 /* WinningCheckView.swift */,
-								8990217E4A00430A9A3DC4C6 /* QRCodeScannerView.swift */,
+				8990217E4A00430A9A3DC4C6 /* QRCodeScannerView.swift */,
 				73883F8D31914FCD839C023D /* Info.plist */,
 				B3C4D5E6F7A8B9C0D1E2F3A4 /* Assets.xcassets */,
 				A87AB91C07B14D648911AF16 /* PurchaseHistory.swift */,
@@ -115,6 +121,9 @@
 				CC5FEA30CC9B49788BEF4ED2 /* CachedLottoData.swift */,
 				3A00AB2CDC364F7EB79A3762 /* LottoCacheManager.swift */,
 				708C411693EC44A0899B2B8E /* LottoDataStore.swift */,
+				EE1234567890ABCDEF123456 /* DisclaimerView.swift */,
+				AA9876543210ABCDEF654321 /* SavedLottoNumber.swift */,
+				CC2222222222BBBBBBBBBBBB /* SavedNumbersView.swift */,
 			);
 			path = LottoChecker;
 			sourceTree = "<group>";
@@ -221,6 +230,9 @@
 				325E1EA2DE56483FBF82FC35 /* CachedLottoData.swift in Sources */,
 				951830282BE847A4B83AC95F /* LottoCacheManager.swift in Sources */,
 				63FC3023D4F34275BFC8A382 /* LottoDataStore.swift in Sources */,
+				DD1234567890ABCDEF123456 /* DisclaimerView.swift in Sources */,
+				FF9876543210ABCDEF654321 /* SavedLottoNumber.swift in Sources */,
+				BB1111111111AAAAAAAAAAAA /* SavedNumbersView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,11 +365,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				INFOPLIST_FILE = LottoChecker/Info.plist;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = QGAQ3AY3R3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = LottoChecker/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "확률계산기";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -370,9 +384,11 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lottochecker.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -383,11 +399,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				INFOPLIST_FILE = LottoChecker/Info.plist;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = QGAQ3AY3R3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = LottoChecker/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "확률계산기";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -400,9 +418,11 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lottochecker.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

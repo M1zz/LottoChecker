@@ -17,50 +17,49 @@ struct ContentView: View {
             )
             .ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: 20) {
-                    if viewModel.isLoading {
-                        ProgressView()
-                            .scaleEffect(1.5)
-                            .padding(.top, 100)
-                    } else if let error = viewModel.errorMessage {
-                        VStack(spacing: 15) {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .font(.system(size: 50))
-                                .foregroundColor(.orange)
-                            Text(error)
-                                .foregroundColor(.red)
-                                .multilineTextAlignment(.center)
-                            Button("다시 시도") {
-                                Task {
-                                    await viewModel.fetchLotto(round: viewModel.currentRound)
+            GeometryReader { geometry in
+                ScrollView {
+                    VStack(spacing: 20) {
+                        if viewModel.isLoading {
+                            ProgressView()
+                                .scaleEffect(1.5)
+                                .padding(.top, 100)
+                        } else if let error = viewModel.errorMessage {
+                            ErrorView(
+                                errorMessage: error,
+                                errorSuggestion: viewModel.errorSuggestion,
+                                retryAction: {
+                                    Task {
+                                        await viewModel.fetchLotto(round: viewModel.currentRound)
+                                    }
                                 }
+                            )
+                            .padding(.top, 50)
+                        } else if let lotto = viewModel.lottoData {
+                            VStack(spacing: 15) {
+                                // 추첨까지 남은 시간 (발표 전)
+                                countdownTimerCard
+
+                                // 회차 정보
+                                roundHeader(lotto: lotto)
+
+                                // 당첨 번호
+                                winningNumbers(lotto: lotto)
+
+                                // 확인하러가기 버튼
+                                checkNowButton
+
+                                // 상세 정보
+                                detailsCard(lotto: lotto)
+
+                                // 네비게이션 버튼
+                                navigationButtons
                             }
-                            .buttonStyle(.bordered)
+                            .padding(.vertical, 10)
                         }
-                        .padding(.top, 100)
-                    } else if let lotto = viewModel.lottoData {
-                        VStack(spacing: 25) {
-                            // 추첨까지 남은 시간 (발표 전)
-                            countdownTimerCard
-
-                            // 회차 정보
-                            roundHeader(lotto: lotto)
-
-                            // 당첨 번호
-                            winningNumbers(lotto: lotto)
-
-                            // 확인하러가기 버튼
-                            checkNowButton
-
-                            // 상세 정보
-                            detailsCard(lotto: lotto)
-
-                            // 네비게이션 버튼
-                            navigationButtons
-                        }
-                        .padding()
                     }
+                    .frame(width: geometry.size.width * 11 / 12)
+                    .padding(.horizontal, (geometry.size.width * 1 / 24))
                 }
             }
         }
@@ -277,7 +276,6 @@ struct ContentView: View {
             }
             .disabled(viewModel.currentRound >= viewModel.latestRound)
         }
-        .padding(.horizontal)
     }
 
     // MARK: - Helper Functions
@@ -383,6 +381,79 @@ struct DetailRow: View {
             Text(value)
                 .fontWeight(.semibold)
         }
+    }
+}
+
+// MARK: - Error View Component
+struct ErrorView: View {
+    let errorMessage: String
+    let errorSuggestion: String?
+    let retryAction: () -> Void
+
+    var body: some View {
+        VStack(spacing: 25) {
+            // 에러 아이콘
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color.red.opacity(0.1), Color.orange.opacity(0.1)]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 100, height: 100)
+
+                Image(systemName: "wifi.slash")
+                    .font(.system(size: 50))
+                    .foregroundColor(.orange)
+            }
+
+            // 에러 메시지
+            VStack(spacing: 12) {
+                Text(errorMessage)
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.center)
+
+                if let suggestion = errorSuggestion {
+                    Text(suggestion)
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                }
+            }
+
+            // 재시도 버튼
+            Button {
+                retryAction()
+            } label: {
+                HStack {
+                    Image(systemName: "arrow.clockwise")
+                    Text("다시 시도")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: 200)
+                .padding(.vertical, 14)
+                .background(
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color.blue, Color.purple]),
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .foregroundColor(.white)
+                .cornerRadius(12)
+                .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
+            }
+        }
+        .padding()
+        .background(Color.white.opacity(0.7))
+        .cornerRadius(20)
+        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+        .padding(.horizontal, 30)
     }
 }
 

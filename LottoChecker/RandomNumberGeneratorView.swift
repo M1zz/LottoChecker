@@ -22,6 +22,8 @@ struct RandomNumberGeneratorView: View {
     @State private var enableSectionBalance: Bool = false
     @State private var enableConsecutiveLimit: Bool = false
     @State private var maxConsecutive: Int = 2
+    @State private var showingSaveAlert = false
+    @State private var savedMessage = ""
 
     enum PickerMode {
         case include, exclude
@@ -52,29 +54,56 @@ struct RandomNumberGeneratorView: View {
             .ignoresSafeArea()
 
             ScrollView {
-                VStack(spacing: 25) {
+                VStack(spacing: 15) {
                     // 생성된 번호 표시
                     if !generatedNumbers.isEmpty {
                         generatedNumbersCard
+                            .padding(.horizontal, 16)
 
                         // AI 분석 번호 찾기 버튼
                         aiAnalysisPromptCard
+                            .padding(.horizontal, 16)
                     }
 
                     // 필터 설정 카드
                     filterSettingsCard
+                        .padding(.horizontal, 16)
 
                     // 생성 버튼
                     generateButton
+                        .padding(.horizontal, 16)
 
                     // 저장된 조합
                     if !savedCombinations.isEmpty {
                         savedCombinationsCard
+                            .padding(.horizontal, 16)
                     }
                 }
-                .padding()
+                .padding(.vertical, 10)
             }
         }
+        .overlay(
+            Group {
+                if showingSaveAlert {
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                            Text(savedMessage)
+                                .fontWeight(.semibold)
+                        }
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(10)
+                        .shadow(radius: 10)
+                        .padding(.bottom, 50)
+                    }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .animation(.spring(), value: showingSaveAlert)
+                }
+            }
+        )
         .sheet(isPresented: $showingNumberPicker) {
             numberPickerSheet
         }
@@ -118,7 +147,7 @@ struct RandomNumberGeneratorView: View {
                 .tint(.blue)
 
                 Button {
-                    savedCombinations.append(generatedNumbers)
+                    saveNumber()
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "bookmark.fill")
@@ -899,6 +928,27 @@ struct RandomNumberGeneratorView: View {
         UserDefaults.standard.set(enableSectionBalance, forKey: enableSectionBalanceKey)
         UserDefaults.standard.set(enableConsecutiveLimit, forKey: enableConsecutiveLimitKey)
         UserDefaults.standard.set(maxConsecutive, forKey: maxConsecutiveKey)
+    }
+
+    private func saveNumber() {
+        savedCombinations.append(generatedNumbers)
+
+        // UserDefaults에 저장
+        let savedNumber = SavedLottoNumber(
+            numbers: generatedNumbers,
+            generationType: "통계기반",
+            memo: nil
+        )
+        SavedNumbersManager.shared.save(savedNumber)
+
+        // 피드백 표시
+        savedMessage = "번호가 저장되었습니다"
+        showingSaveAlert = true
+
+        // 2초 후 피드백 숨기기
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            showingSaveAlert = false
+        }
     }
 
     private func loadSettings() {
