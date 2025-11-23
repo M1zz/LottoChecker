@@ -51,6 +51,9 @@ struct QRCodeScannerView: View {
     }
 
     private func parseLottoQRCode(_ code: String) -> [Int]? {
+        AppLogger.info("QR 코드 파싱 시작", category: AppLogger.qr)
+        AppLogger.debug("QR 코드 내용: \(code)", category: AppLogger.qr)
+
         // 동행복권 QR 코드 형식 파싱
         // 실제 QR 코드 형식: "v1.0,숫자,숫자,숫자,숫자,숫자,숫자..." 등
         // 예시: "v1.0,1,5,12,23,34,45" 형태로 가정
@@ -59,14 +62,18 @@ struct QRCodeScannerView: View {
 
         // 최소한 7개 이상의 요소가 있어야 함 (버전 + 6개 번호)
         guard components.count >= 7 else {
+            AppLogger.debug("표준 형식이 아님, 대체 파싱 시도", category: AppLogger.qr)
             // 다른 형식 시도: 공백이나 다른 구분자로 분리된 숫자들
             let numbers = code.components(separatedBy: CharacterSet.decimalDigits.inverted)
                 .compactMap { Int($0) }
                 .filter { $0 >= 1 && $0 <= 45 }
 
             if numbers.count >= 6 {
-                return Array(numbers.prefix(6)).sorted()
+                let result = Array(numbers.prefix(6)).sorted()
+                AppLogger.info("QR 코드 파싱 성공 (대체 형식): \(result)", category: AppLogger.qr)
+                return result
             }
+            AppLogger.warning("QR 코드 파싱 실패: 유효한 번호 부족", category: AppLogger.qr)
             return nil
         }
 
@@ -75,10 +82,15 @@ struct QRCodeScannerView: View {
             .compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
             .filter { $0 >= 1 && $0 <= 45 }
 
-        guard numbers.count >= 6 else { return nil }
+        guard numbers.count >= 6 else {
+            AppLogger.warning("QR 코드 파싱 실패: 유효한 번호가 6개 미만", category: AppLogger.qr)
+            return nil
+        }
 
         // 첫 6개 번호만 사용하고 정렬
-        return Array(numbers.prefix(6)).sorted()
+        let result = Array(numbers.prefix(6)).sorted()
+        AppLogger.info("QR 코드 파싱 성공: \(result)", category: AppLogger.qr)
+        return result
     }
 }
 
@@ -122,11 +134,13 @@ class QRScannerViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        AppLogger.info("QR 스캐너 초기화 시작", category: AppLogger.qr)
 
         view.backgroundColor = UIColor.black
         captureSession = AVCaptureSession()
 
         guard let videoCaptureDevice = AVCaptureDevice.default(for: .video) else {
+            AppLogger.error("카메라 장치를 찾을 수 없음", category: AppLogger.qr)
             showAlert(message: "카메라를 사용할 수 없습니다.")
             return
         }
@@ -136,13 +150,16 @@ class QRScannerViewController: UIViewController {
         do {
             videoInput = try AVCaptureDeviceInput(device: videoCaptureDevice)
         } catch {
+            AppLogger.error("카메라 입력 설정 실패", error: error, category: AppLogger.qr)
             showAlert(message: "카메라 입력을 설정할 수 없습니다.")
             return
         }
 
         if captureSession.canAddInput(videoInput) {
             captureSession.addInput(videoInput)
+            AppLogger.debug("카메라 입력 추가 성공", category: AppLogger.qr)
         } else {
+            AppLogger.error("카메라 입력 추가 실패", category: AppLogger.qr)
             showAlert(message: "카메라 입력을 추가할 수 없습니다.")
             return
         }
@@ -154,7 +171,9 @@ class QRScannerViewController: UIViewController {
 
             metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
             metadataOutput.metadataObjectTypes = [.qr]
+            AppLogger.debug("메타데이터 출력 설정 성공", category: AppLogger.qr)
         } else {
+            AppLogger.error("메타데이터 출력 추가 실패", category: AppLogger.qr)
             showAlert(message: "메타데이터 출력을 추가할 수 없습니다.")
             return
         }
@@ -166,6 +185,7 @@ class QRScannerViewController: UIViewController {
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             self?.captureSession.startRunning()
+            AppLogger.info("QR 스캐너 시작됨", category: AppLogger.qr)
         }
     }
 
@@ -195,13 +215,21 @@ extension QRScannerViewController: AVCaptureMetadataOutputObjectsDelegate {
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
 
         if let metadataObject = metadataObjects.first {
-            guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject else { return }
-            guard let stringValue = readableObject.stringValue else { return }
+            guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject else {
+                AppLogger.debug("읽을 수 없는 메타데이터 객체", category: AppLogger.qr)
+                return
+            }
+            guard let stringValue = readableObject.stringValue else {
+                AppLogger.warning("QR 코드 문자열 값이 없음", category: AppLogger.qr)
+                return
+            }
 
+            AppLogger.info("QR 코드 스캔 성공", category: AppLogger.qr)
             AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
 
             DispatchQueue.global(qos: .userInitiated).async { [weak self] in
                 self?.captureSession.stopRunning()
+                AppLogger.debug("QR 스캐너 중지됨", category: AppLogger.qr)
             }
 
             delegate?.didFindCode(stringValue)

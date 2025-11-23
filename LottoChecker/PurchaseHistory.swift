@@ -29,6 +29,9 @@ final class PurchaseHistory {
         self.hasBonus = nil
         self.rank = nil
         self.prize = nil
+
+        AppLogger.logDataSave(type: "PurchaseHistory", count: 1)
+        AppLogger.debug("구매 내역 생성 - 회차: \(round), 방법: \(purchaseMethod)", category: AppLogger.storage)
     }
 
     // 당첨 결과 업데이트
@@ -38,6 +41,12 @@ final class PurchaseHistory {
         self.hasBonus = hasBonus
         self.rank = rank
         self.prize = prize
+
+        if let rank = rank {
+            AppLogger.info("당첨 결과 업데이트 - 회차: \(round), 등수: \(rank)등, 당첨금: \(prize ?? 0)원", category: AppLogger.storage)
+        } else {
+            AppLogger.debug("당첨 결과 업데이트 - 회차: \(round), 낙첨", category: AppLogger.storage)
+        }
     }
 
     // 당첨 여부

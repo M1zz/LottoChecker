@@ -21,6 +21,18 @@
 		CBF4A877BAA34FAD81F4DBD1 /* QRCodeScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8990217E4A00430A9A3DC4C6 /* QRCodeScannerView.swift */; };
 		713FCE5F9C684647ADD7C456 /* AdvancedAnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71357559F0884D9FA4009E7C /* AdvancedAnalysisView.swift */; };
 		019BF61A066A4BFB9D9581CB /* AdvancedAnalysisViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C19C34F8864E2C9A7066FA /* AdvancedAnalysisViewModel.swift */; };
+		22D23FEF57994554AA13A639 /* AdvancedAnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 446FA1C8FD27480EADA18F3C /* AdvancedAnalysisView.swift */; };
+		759CA55160374CB1A488ACAB /* AdvancedAnalysisViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D204D6FB3F514E6CA2CE4EF3 /* AdvancedAnalysisViewModel.swift */; };
+		83163840E56D4F4D8D0E54EE /* PurchaseHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87AB91C07B14D648911AF16 /* PurchaseHistory.swift */; };
+		AC717842E8EB4ABC994C0F3E /* PurchaseHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4A0D6488A104AFCABCF189F /* PurchaseHistoryView.swift */; };
+		AB05143493AB4120A94F1566 /* AddPurchaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2BC4CB3EB641B78EEA1B06 /* AddPurchaseView.swift */; };
+		6E6BE43A7D3A4B9B9EC43BD9 /* PurchaseStatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B01361516C142619569FB5B /* PurchaseStatisticsView.swift */; };
+		C867EDAD6FEB4BB78A9F9A09 /* LottoMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DB91F3573124DAD8F637258 /* LottoMainView.swift */; };
+		CDBB4C0FC59F49359ADCB84D /* NumberGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F07E92F8624798A25178C7 /* NumberGeneratorView.swift */; };
+		3DBFB333110C469C814B4485 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CD27D42A5642D98E18B7AB /* AppLogger.swift */; };
+		325E1EA2DE56483FBF82FC35 /* CachedLottoData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5FEA30CC9B49788BEF4ED2 /* CachedLottoData.swift */; };
+		951830282BE847A4B83AC95F /* LottoCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A00AB2CDC364F7EB79A3762 /* LottoCacheManager.swift */; };
+		63FC3023D4F34275BFC8A382 /* LottoDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 708C411693EC44A0899B2B8E /* LottoDataStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +52,18 @@
 		73883F8D31914FCD839C023D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		71357559F0884D9FA4009E7C /* AdvancedAnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedAnalysisView.swift; sourceTree = "<group>"; };
 		80C19C34F8864E2C9A7066FA /* AdvancedAnalysisViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedAnalysisViewModel.swift; sourceTree = "<group>"; };
+		446FA1C8FD27480EADA18F3C /* AdvancedAnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedAnalysisView.swift; sourceTree = "<group>"; };
+		D204D6FB3F514E6CA2CE4EF3 /* AdvancedAnalysisViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedAnalysisViewModel.swift; sourceTree = "<group>"; };
+		A87AB91C07B14D648911AF16 /* PurchaseHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseHistory.swift; sourceTree = "<group>"; };
+		F4A0D6488A104AFCABCF189F /* PurchaseHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseHistoryView.swift; sourceTree = "<group>"; };
+		5D2BC4CB3EB641B78EEA1B06 /* AddPurchaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPurchaseView.swift; sourceTree = "<group>"; };
+		0B01361516C142619569FB5B /* PurchaseStatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseStatisticsView.swift; sourceTree = "<group>"; };
+		3DB91F3573124DAD8F637258 /* LottoMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottoMainView.swift; sourceTree = "<group>"; };
+		B1F07E92F8624798A25178C7 /* NumberGeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberGeneratorView.swift; sourceTree = "<group>"; };
+		00CD27D42A5642D98E18B7AB /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
+		CC5FEA30CC9B49788BEF4ED2 /* CachedLottoData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedLottoData.swift; sourceTree = "<group>"; };
+		3A00AB2CDC364F7EB79A3762 /* LottoCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottoCacheManager.swift; sourceTree = "<group>"; };
+		708C411693EC44A0899B2B8E /* LottoDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottoDataStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +90,8 @@
 			children = (
 								71357559F0884D9FA4009E7C /* AdvancedAnalysisView.swift */,
 				80C19C34F8864E2C9A7066FA /* AdvancedAnalysisViewModel.swift */,
+								446FA1C8FD27480EADA18F3C /* AdvancedAnalysisView.swift */,
+				D204D6FB3F514E6CA2CE4EF3 /* AdvancedAnalysisViewModel.swift */,
 				B1C2D3E4F5A6B7C8D9E0F1A2 /* LottoCheckerApp.swift */,
 				B2C3D4E5F6A7B8C9D0E1F2A3 /* ContentView.swift */,
 				B4C5D6E7F8A9B0C1D2E3F4A5 /* LottoModel.swift */,
@@ -79,6 +105,16 @@
 								8990217E4A00430A9A3DC4C6 /* QRCodeScannerView.swift */,
 				73883F8D31914FCD839C023D /* Info.plist */,
 				B3C4D5E6F7A8B9C0D1E2F3A4 /* Assets.xcassets */,
+				A87AB91C07B14D648911AF16 /* PurchaseHistory.swift */,
+				F4A0D6488A104AFCABCF189F /* PurchaseHistoryView.swift */,
+				5D2BC4CB3EB641B78EEA1B06 /* AddPurchaseView.swift */,
+				0B01361516C142619569FB5B /* PurchaseStatisticsView.swift */,
+				3DB91F3573124DAD8F637258 /* LottoMainView.swift */,
+				B1F07E92F8624798A25178C7 /* NumberGeneratorView.swift */,
+				00CD27D42A5642D98E18B7AB /* AppLogger.swift */,
+				CC5FEA30CC9B49788BEF4ED2 /* CachedLottoData.swift */,
+				3A00AB2CDC364F7EB79A3762 /* LottoCacheManager.swift */,
+				708C411693EC44A0899B2B8E /* LottoDataStore.swift */,
 			);
 			path = LottoChecker;
 			sourceTree = "<group>";
@@ -166,6 +202,8 @@
 				A5B6C7D8E9F0A1B2C3D4E5F6 /* LottoService.swift in Sources */,
 				A6B7C8D9E0F1A2B3C4D5E6F7 /* LottoViewModel.swift in Sources */,
 				624A15EBC7894001B6412A62 /* MainTabView.swift in Sources */,
+				22D23FEF57994554AA13A639 /* AdvancedAnalysisView.swift in Sources */,
+				759CA55160374CB1A488ACAB /* AdvancedAnalysisViewModel.swift in Sources */,
 				713FCE5F9C684647ADD7C456 /* AdvancedAnalysisView.swift in Sources */,
 				019BF61A066A4BFB9D9581CB /* AdvancedAnalysisViewModel.swift in Sources */,
 				CBF4A877BAA34FAD81F4DBD1 /* QRCodeScannerView.swift in Sources */,
@@ -173,6 +211,16 @@
 				17C9B60606DF4487BFC5DF11 /* AnalysisView.swift in Sources */,
 				578E3E368B1C4CF8958FDA13 /* ExpectedValueView.swift in Sources */,
 				342E45EFAB46438787F963E4 /* WinningCheckView.swift in Sources */,
+				83163840E56D4F4D8D0E54EE /* PurchaseHistory.swift in Sources */,
+				AC717842E8EB4ABC994C0F3E /* PurchaseHistoryView.swift in Sources */,
+				AB05143493AB4120A94F1566 /* AddPurchaseView.swift in Sources */,
+				6E6BE43A7D3A4B9B9EC43BD9 /* PurchaseStatisticsView.swift in Sources */,
+				C867EDAD6FEB4BB78A9F9A09 /* LottoMainView.swift in Sources */,
+				CDBB4C0FC59F49359ADCB84D /* NumberGeneratorView.swift in Sources */,
+				3DBFB333110C469C814B4485 /* AppLogger.swift in Sources */,
+				325E1EA2DE56483FBF82FC35 /* CachedLottoData.swift in Sources */,
+				951830282BE847A4B83AC95F /* LottoCacheManager.swift in Sources */,
+				63FC3023D4F34275BFC8A382 /* LottoDataStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

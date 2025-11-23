@@ -28,7 +28,25 @@ class AdvancedAnalysisViewModel: ObservableObject {
     private let service = LottoService.shared
     private var analyzedData: [LottoResponse] = []
 
+    // 분석 결과 캐싱
+    private var cachedAnalysisRounds: Int?
+    private var cachedAnalysisTime: Date?
+    private let analysisCacheDuration: TimeInterval = 3600 // 1시간
+
     func analyzeData(rounds: Int) async {
+        // 캐시된 분석 결과가 유효하면 재사용
+        if let cachedRounds = cachedAnalysisRounds,
+           let cacheTime = cachedAnalysisTime,
+           cachedRounds == rounds,
+           Date().timeIntervalSince(cacheTime) < analysisCacheDuration,
+           !analyzedData.isEmpty {
+            print("✅ 캐시된 분석 결과 사용 - \(rounds)회차 데이터")
+            performAnalysis()
+            isLoading = false
+            return
+        }
+
+        print("🔄 새로운 분석 시작 - \(rounds)회차 데이터")
         isLoading = true
         analyzedData.removeAll()
 
@@ -52,6 +70,11 @@ class AdvancedAnalysisViewModel: ObservableObject {
 
             // 분석 실행
             performAnalysis()
+
+            // 캐시 정보 저장
+            cachedAnalysisRounds = rounds
+            cachedAnalysisTime = Date()
+            print("💾 분석 결과 캐싱 완료 - \(rounds)회차")
 
         } catch {
             print("분석 중 오류: \(error)")

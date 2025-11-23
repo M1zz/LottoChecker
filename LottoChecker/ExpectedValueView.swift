@@ -7,9 +7,17 @@ struct ExpectedValueView: View {
     @State private var showingRoundPicker = false
     @State private var simulationResult: SimulationResult?
     @State private var showingResultDetail = false
+    @State private var numberInputMethod: String = "자동"
+    @State private var userNumbers: [Int?] = Array(repeating: nil, count: 6)
+    @State private var showingNumberInput = false
+    @State private var currentInputIndex = 0
 
     var numberOfGames: Int {
         purchaseAmount / 1000
+    }
+
+    var allNumbersEntered: Bool {
+        userNumbers.allSatisfy { $0 != nil }
     }
 
     var body: some View {
@@ -34,8 +42,18 @@ struct ExpectedValueView: View {
                             // 구매 금액 설정
                             purchaseInputCard
 
-                            // 시뮬레이션 버튼
+                            // 번호 입력 방식 선택
                             if selectedRound != nil {
+                                numberMethodCard
+                            }
+
+                            // 수동 입력 UI
+                            if selectedRound != nil && numberInputMethod == "수동" {
+                                manualNumberInputCard
+                            }
+
+                            // 시뮬레이션 버튼
+                            if selectedRound != nil && (numberInputMethod == "자동" || (numberInputMethod == "수동" && allNumbersEntered)) {
                                 simulationButton
                             }
 
@@ -54,6 +72,15 @@ struct ExpectedValueView: View {
             .sheet(isPresented: $showingRoundPicker) {
                 roundPickerSheet
             }
+            .sheet(isPresented: $showingNumberInput) {
+                numberPickerSheet
+            }
+            .task {
+                // 최신 회차를 기본값으로 설정
+                if selectedRound == nil && viewModel.latestRound > 0 {
+                    selectedRound = viewModel.latestRound
+                }
+            }
         }
     }
 
@@ -61,61 +88,59 @@ struct ExpectedValueView: View {
 
     private var roundSelectionCard: some View {
         VStack(spacing: 15) {
-            Text("시뮬레이션할 회차")
-                .font(.title3)
-                .fontWeight(.semibold)
-
-            Divider()
-
             HStack {
-                if let round = selectedRound {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("\(round)회")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                        if let lotto = viewModel.lottoData {
-                            Text(lotto.formattedDate)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                } else {
-                    Text("회차를 선택하세요")
-                        .foregroundColor(.secondary)
-                }
+                Text("시뮬레이션할 회차")
+                    .font(.headline)
+                    .fontWeight(.semibold)
 
                 Spacer()
 
                 Button {
                     showingRoundPicker = true
                 } label: {
-                    Image(systemName: "calendar")
-                        .font(.title3)
+                    HStack(spacing: 6) {
+                        if let round = selectedRound {
+                            Text("\(round)회")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                        } else {
+                            Text("선택하기")
+                                .font(.subheadline)
+                        }
+                        Image(systemName: "chevron.down.circle.fill")
+                            .font(.title3)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color.blue.opacity(0.15))
+                    .foregroundColor(.blue)
+                    .cornerRadius(10)
                 }
-                .buttonStyle(.bordered)
             }
 
-            if let lotto = viewModel.lottoData {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("당첨 번호")
-                        .font(.caption)
+            if let round = selectedRound, let lotto = viewModel.lottoData {
+                Divider()
+                    .padding(.vertical, 4)
+
+                VStack(spacing: 8) {
+                    Text(lotto.formattedDate)
+                        .font(.subheadline)
                         .foregroundColor(.secondary)
 
-                    HStack(spacing: 8) {
-                        ForEach(lotto.numbers, id: \.self) { number in
-                            numberBall(number: number, size: 35)
-                        }
-                        Text("+")
-                            .foregroundColor(.gray)
-                        numberBall(number: lotto.bnusNo, size: 35, isBonus: true)
-                    }
+                    Text("시뮬레이션 준비 완료")
+                        .font(.caption)
+                        .foregroundColor(.green)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(Color.green.opacity(0.1))
+                        .cornerRadius(8)
                 }
             }
         }
         .padding()
-        .background(Color.white.opacity(0.7))
-        .cornerRadius(20)
-        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+        .background(Color.white.opacity(0.8))
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
     }
 
     private var purchaseInputCard: some View {
@@ -171,9 +196,117 @@ struct ExpectedValueView: View {
             .cornerRadius(10)
         }
         .padding()
-        .background(Color.white.opacity(0.7))
-        .cornerRadius(20)
-        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+        .background(Color.white.opacity(0.8))
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
+    }
+
+    private var numberMethodCard: some View {
+        VStack(spacing: 15) {
+            Text("번호 생성 방식")
+                .font(.headline)
+                .fontWeight(.semibold)
+
+            Divider()
+                .padding(.vertical, 4)
+
+            Picker("번호 생성 방식", selection: $numberInputMethod) {
+                Text("자동").tag("자동")
+                Text("수동").tag("수동")
+            }
+            .pickerStyle(.segmented)
+            .onChange(of: numberInputMethod) { _, _ in
+                // 방식 변경 시 초기화
+                userNumbers = Array(repeating: nil, count: 6)
+                simulationResult = nil
+            }
+
+            HStack {
+                Image(systemName: numberInputMethod == "자동" ? "dice.fill" : "hand.tap.fill")
+                    .foregroundColor(numberInputMethod == "자동" ? .green : .blue)
+                Text(numberInputMethod == "자동" ? "매 게임마다 랜덤 번호 생성" : "동일한 번호로 시뮬레이션")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background((numberInputMethod == "자동" ? Color.green : Color.blue).opacity(0.1))
+            .cornerRadius(10)
+        }
+        .padding()
+        .background(Color.white.opacity(0.8))
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
+    }
+
+    private var manualNumberInputCard: some View {
+        VStack(spacing: 15) {
+            HStack {
+                Text("번호 입력")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                Spacer()
+                Button {
+                    userNumbers = Array(repeating: nil, count: 6)
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.counterclockwise")
+                        Text("초기화")
+                    }
+                    .font(.caption)
+                    .fontWeight(.medium)
+                }
+                .buttonStyle(.bordered)
+                .tint(.red)
+            }
+
+            Divider()
+                .padding(.vertical, 4)
+
+            HStack(spacing: 8) {
+                ForEach(0..<6) { index in
+                    Button {
+                        currentInputIndex = index
+                        showingNumberInput = true
+                    } label: {
+                        ZStack {
+                            if let number = userNumbers[index] {
+                                numberBall(number: number, size: 50)
+                            } else {
+                                Circle()
+                                    .strokeBorder(Color.blue.opacity(0.3), lineWidth: 2)
+                                    .background(Circle().fill(Color.blue.opacity(0.05)))
+                                    .frame(width: 50, height: 50)
+                                    .overlay(
+                                        Text("\(index + 1)")
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                    )
+                            }
+                        }
+                    }
+                }
+            }
+
+            if !allNumbersEntered {
+                Text("6개의 번호를 모두 입력해주세요")
+                    .font(.caption)
+                    .foregroundColor(.orange)
+            } else {
+                HStack {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                    Text("번호 입력 완료")
+                        .font(.caption)
+                        .foregroundColor(.green)
+                }
+            }
+        }
+        .padding()
+        .background(Color.white.opacity(0.8))
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
     }
 
     private var simulationButton: some View {
@@ -413,6 +546,53 @@ struct ExpectedValueView: View {
             .task {
                 if selectedRound == nil {
                     selectedRound = viewModel.latestRound
+                    Task {
+                        await viewModel.loadRound(round: viewModel.latestRound)
+                    }
+                }
+            }
+        }
+    }
+
+    private var numberPickerSheet: some View {
+        NavigationView {
+            ScrollView {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: 15) {
+                    ForEach(1...45, id: \.self) { number in
+                        let isSelected = userNumbers.contains(number)
+                        let isDisabled = isSelected && userNumbers[currentInputIndex] != number
+
+                        Button {
+                            userNumbers[currentInputIndex] = number
+                            showingNumberInput = false
+                        } label: {
+                            Text("\(number)")
+                                .font(.headline)
+                                .frame(width: 50, height: 50)
+                                .background(
+                                    isDisabled ? Color.gray.opacity(0.3) :
+                                    isSelected ? Color.green :
+                                    Color.blue.opacity(0.1)
+                                )
+                                .foregroundColor(isSelected ? .white : .primary)
+                                .cornerRadius(10)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(isSelected ? Color.clear : Color.gray.opacity(0.3), lineWidth: 1)
+                                )
+                        }
+                        .disabled(isDisabled)
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle("\(currentInputIndex + 1)번째 번호 선택")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("취소") {
+                        showingNumberInput = false
+                    }
                 }
             }
         }
@@ -461,9 +641,18 @@ struct ExpectedValueView: View {
             var totalPrize = 0
             var winningCount = 0
 
+            // 수동 입력 번호 (수동 모드인 경우)
+            let manualNumbers = numberInputMethod == "수동" ? userNumbers.compactMap { $0 }.sorted() : []
+
             // 각 게임 시뮬레이션
             for _ in 0..<numberOfGames {
-                let numbers = generateRandomNumbers()
+                let numbers: [Int]
+                if numberInputMethod == "자동" {
+                    numbers = generateRandomNumbers()
+                } else {
+                    numbers = manualNumbers
+                }
+
                 let result = checkGame(numbers: numbers, lotto: lotto)
                 gameResults.append(result)
 

@@ -1,47 +1,58 @@
 import SwiftUI
 
 struct AdvancedAnalysisView: View {
+    @Binding var isActive: Bool
     @StateObject private var viewModel = AdvancedAnalysisViewModel()
     @State private var selectedAnalysisRange: Int = 100
     @State private var selectedTab = 0
+    @State private var hasLoadedOnce = false
 
     var body: some View {
-        NavigationView {
-            ZStack {
-                LinearGradient(
-                    gradient: Gradient(colors: [Color.purple.opacity(0.1), Color.blue.opacity(0.1)]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
+        ZStack {
+            LinearGradient(
+                gradient: Gradient(colors: [Color.purple.opacity(0.1), Color.blue.opacity(0.1)]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
 
-                if viewModel.isLoading {
-                    ProgressView("고급 분석 중...")
-                        .scaleEffect(1.5)
-                } else {
-                    VStack(spacing: 0) {
-                        // 분석 범위 선택
-                        analysisRangeHeader
+            if viewModel.isLoading {
+                ProgressView("고급 분석 중...")
+                    .scaleEffect(1.5)
+            } else {
+                VStack(spacing: 0) {
+                    // 분석 범위 선택
+                    analysisRangeHeader
 
-                        // 탭 뷰
-                        TabView(selection: $selectedTab) {
-                            correlationAnalysisTab
-                                .tag(0)
+                    // 탭 뷰
+                    TabView(selection: $selectedTab) {
+                        correlationAnalysisTab
+                            .tag(0)
 
-                            patternAnalysisTab
-                                .tag(1)
+                        patternAnalysisTab
+                            .tag(1)
 
-                            recommendationTab
-                                .tag(2)
-                        }
-                        .tabViewStyle(.page(indexDisplayMode: .always))
+                        recommendationTab
+                            .tag(2)
                     }
+                    .tabViewStyle(.page(indexDisplayMode: .always))
                 }
             }
-            .navigationTitle("AI 분석")
-            .navigationBarTitleDisplayMode(.large)
-            .task {
-                if viewModel.correlationData.isEmpty {
+        }
+        .onChange(of: isActive) { _, newValue in
+            if newValue && !hasLoadedOnce {
+                // 탭이 활성화되고 한 번도 로드하지 않았으면 분석 실행
+                hasLoadedOnce = true
+                Task {
+                    await viewModel.analyzeData(rounds: selectedAnalysisRange)
+                }
+            }
+        }
+        .onAppear {
+            // 첫 로드 시에도 분석 실행
+            if !hasLoadedOnce {
+                hasLoadedOnce = true
+                Task {
                     await viewModel.analyzeData(rounds: selectedAnalysisRange)
                 }
             }
@@ -645,5 +656,5 @@ struct FlowLayout: Layout {
 }
 
 #Preview {
-    AdvancedAnalysisView()
+    AdvancedAnalysisView(isActive: .constant(true))
 }
