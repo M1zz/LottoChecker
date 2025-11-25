@@ -31,9 +31,15 @@ struct DisclaimerView: View {
                 // 면책 조항 내용
                 VStack(alignment: .leading, spacing: 20) {
                     DisclaimerItem(
+                        icon: "function",
+                        text: "이 앱은 확률 계산과 통계 분석을 위한 교육용 도구입니다.",
+                        iconColor: .blue
+                    )
+
+                    DisclaimerItem(
                         icon: "info.circle.fill",
                         text: "이 앱은 로또 구매 기능을 제공하지 않습니다.",
-                        iconColor: .blue
+                        iconColor: .green
                     )
 
                     DisclaimerItem(
@@ -46,12 +52,6 @@ struct DisclaimerView: View {
                         icon: "exclamationmark.shield.fill",
                         text: "과도한 복권 구매는 중독을 유발할 수 있습니다.",
                         iconColor: .orange
-                    )
-
-                    DisclaimerItem(
-                        icon: "chart.bar.fill",
-                        text: "이 앱은 정보 제공 및 통계 분석 목적으로만 사용됩니다.",
-                        iconColor: .green
                     )
                 }
                 .padding(.vertical, 25)

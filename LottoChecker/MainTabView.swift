@@ -6,29 +6,19 @@ struct MainTabView: View {
 
     var body: some View {
         TabView {
-            LottoMainView()
+            RealTimeProbabilityCalculator()
                 .tabItem {
-                    Label("로또", systemImage: "star.fill")
+                    Label("계산기", systemImage: "plus.forwardslash.minus")
                 }
 
-            PurchaseHistoryView()
-                .tabItem {
-                    Label("히스토리", systemImage: "book.fill")
-                }
-
-            NumberGeneratorView()
+            EnhancedStatisticsView()
                 .tabItem {
                     Label("통계 분석", systemImage: "chart.bar.fill")
                 }
 
-            ExpectedValueView()
+            LottoMainView()
                 .tabItem {
-                    Label("확률 계산기", systemImage: "percent")
-                }
-
-            SavedNumbersView()
-                .tabItem {
-                    Label("저장 번호", systemImage: "bookmark.fill")
+                    Label("당첨번호", systemImage: "star.fill")
                 }
         }
         .fullScreenCover(isPresented: $showDisclaimer) {

@@ -90,7 +90,7 @@ struct ExpectedValueView: View {
                     }
                 }
             }
-            .navigationTitle("확률 계산기")
+            .navigationTitle("당첨 시뮬레이션")
             .navigationBarTitleDisplayMode(.large)
             .sheet(isPresented: $showingRoundPicker) {
                 roundPickerSheet

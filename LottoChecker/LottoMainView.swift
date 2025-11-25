@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LottoMainView: View {
     @State private var selectedTab = 0
+    @State private var showingPurchaseHistory = false
 
     var body: some View {
         NavigationView {
@@ -26,6 +27,19 @@ struct LottoMainView: View {
             }
             .navigationTitle(selectedTab == 0 ? "로또 당첨번호" : "당첨 확인")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showingPurchaseHistory = true
+                    } label: {
+                        Image(systemName: "clock.arrow.circlepath")
+                            .font(.title3)
+                    }
+                }
+            }
+            .sheet(isPresented: $showingPurchaseHistory) {
+                PurchaseHistoryView()
+            }
         }
     }
 }

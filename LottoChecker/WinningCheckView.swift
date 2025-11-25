@@ -8,6 +8,8 @@ struct WinningCheckView: View {
     @State private var checkResult: CheckResult?
     @State private var showingNumberInput = false
     @State private var currentInputIndex = 0
+    @State private var manualInputText = ""
+    @State private var showManualInputError = false
     @State private var savedTickets: [LottoTicket] = []
     @State private var showingRoundPicker = false
     @State private var selectedRound: Int?
@@ -201,25 +203,68 @@ struct WinningCheckView: View {
                     Spacer()
                 }
 
-                HStack(spacing: 6) {
-                    ForEach(0..<6) { index in
+                // 한 번에 6개 번호 입력
+                VStack(spacing: 10) {
+                    HStack(spacing: 10) {
+                        TextField("1~45 숫자 6개 입력 (예: 1 7 15 23 35 44)", text: $manualInputText)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .keyboardType(.numbersAndPunctuation)
+                            .autocapitalization(.none)
+                            .disableAutocorrection(true)
+                            .onChange(of: manualInputText) { _, _ in
+                                showManualInputError = false
+                            }
+
                         Button {
-                            currentInputIndex = index
-                            showingNumberInput = true
+                            processManualInput()
                         } label: {
-                            ZStack {
-                                if let number = userNumbers[index] {
-                                    numberBall(number: number, size: 48)
-                                } else {
-                                    Circle()
-                                        .strokeBorder(Color.blue.opacity(0.3), lineWidth: 2)
-                                        .background(Circle().fill(Color.blue.opacity(0.05)))
-                                        .frame(width: 48, height: 48)
-                                        .overlay(
-                                            Text("\(index + 1)")
-                                                .font(.caption)
-                                                .foregroundColor(.gray)
-                                        )
+                            Text("확인")
+                                .fontWeight(.semibold)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                        }
+                    }
+
+                    if showManualInputError {
+                        Text("1~45 사이의 서로 다른 숫자 6개를 입력해주세요")
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
+
+                    Text("띄어쓰기, 쉼표(,) 또는 공백으로 구분해주세요")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+
+                // 개별 번호 선택 (기존 방식도 유지)
+                VStack(spacing: 8) {
+                    Text("또는 번호를 하나씩 선택")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+
+                    HStack(spacing: 6) {
+                        ForEach(0..<6) { index in
+                            Button {
+                                currentInputIndex = index
+                                showingNumberInput = true
+                            } label: {
+                                ZStack {
+                                    if let number = userNumbers[index] {
+                                        numberBall(number: number, size: 48)
+                                    } else {
+                                        Circle()
+                                            .strokeBorder(Color.blue.opacity(0.3), lineWidth: 2)
+                                            .background(Circle().fill(Color.blue.opacity(0.05)))
+                                            .frame(width: 48, height: 48)
+                                            .overlay(
+                                                Text("\(index + 1)")
+                                                    .font(.caption)
+                                                    .foregroundColor(.gray)
+                                            )
+                                    }
                                 }
                             }
                         }
@@ -611,6 +656,47 @@ struct WinningCheckView: View {
     }
 
     // MARK: - Helper Functions
+
+    private func processManualInput() {
+        // Remove all non-digit characters except spaces and commas
+        let cleanedInput = manualInputText.replacingOccurrences(of: "[^0-9 ,]", with: " ", options: .regularExpression)
+
+        // Split by spaces, commas, or any combination
+        let components = cleanedInput.components(separatedBy: CharacterSet(charactersIn: " ,"))
+            .filter { !$0.isEmpty }
+            .compactMap { Int($0) }
+
+        // Validate the input
+        if components.count != 6 {
+            showManualInputError = true
+            return
+        }
+
+        // Check if all numbers are valid (1-45)
+        let validNumbers = components.filter { $0 >= 1 && $0 <= 45 }
+        if validNumbers.count != 6 {
+            showManualInputError = true
+            return
+        }
+
+        // Check for duplicates
+        if Set(validNumbers).count != 6 {
+            showManualInputError = true
+            return
+        }
+
+        // All validation passed, update the numbers
+        for (index, number) in validNumbers.enumerated() {
+            if index < 6 {
+                userNumbers[index] = number
+            }
+        }
+
+        // Clear the input field and error
+        manualInputText = ""
+        showManualInputError = false
+        checkResult = nil
+    }
 
     private func numberBall(number: Int, size: CGFloat = 45, isBonus: Bool = false) -> some View {
         Circle()
