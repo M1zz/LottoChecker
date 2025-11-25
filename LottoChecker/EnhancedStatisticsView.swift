@@ -244,49 +244,58 @@ struct EnhancedStatisticsView: View {
     private var frequencyChartCard: some View {
         VStack(alignment: .leading, spacing: 15) {
             HStack {
-                Image(systemName: "chart.bar.fill")
+                Image(systemName: "link.circle.fill")
                     .foregroundColor(.blue)
-                Text("출현 빈도 분포")
+                Text("자주 나온 번호 페어")
                     .font(.headline)
                     .fontWeight(.semibold)
             }
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 3) {
-                    ForEach(probabilityViewModel.numberTrends.sorted { $0.number < $1.number }) { trend in
-                        VStack(spacing: 4) {
-                            // 막대 그래프
-                            Rectangle()
-                                .fill(
-                                    trend.deviation > 10 ? Color.red.opacity(0.8) :
-                                    trend.deviation < -10 ? Color.blue.opacity(0.8) :
-                                    Color.gray.opacity(0.5)
-                                )
-                                .frame(width: 25, height: CGFloat(max(10, trend.appearances * 3)))
+            if probabilityViewModel.numberPairs.isEmpty {
+                HStack {
+                    Spacer()
+                    ProgressView()
+                        .padding()
+                    Spacer()
+                }
+            } else {
+                // Top 15 페어 표시
+                let topPairs = Array(probabilityViewModel.numberPairs.prefix(15))
 
-                            Text("\(trend.number)")
-                                .font(.system(size: 9))
-                                .foregroundColor(.secondary)
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 12) {
+                        ForEach(topPairs) { pair in
+                            PairCard(pair: pair)
                         }
-                        .frame(maxHeight: .infinity, alignment: .bottom)
                     }
                 }
-                .frame(height: 150)
-                .padding(.vertical, 10)
-            }
+                .frame(maxHeight: 300)
 
-            HStack(spacing: 20) {
-                Label("높은 빈도", systemImage: "circle.fill")
-                    .font(.caption)
-                    .foregroundColor(.red)
-                Label("평균", systemImage: "circle.fill")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                Label("낮은 빈도", systemImage: "circle.fill")
-                    .font(.caption)
-                    .foregroundColor(.blue)
+                Divider()
+
+                // 통계 정보
+                HStack(spacing: 20) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("분석 기간")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("최근 \(probabilityViewModel.selectedTimeRange)회")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                    }
+
+                    Spacer()
+
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text("총 페어 수")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("\(probabilityViewModel.numberPairs.count)개")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                    }
+                }
             }
-            .font(.caption2)
         }
         .padding()
         .background(Color.white.opacity(0.9))
@@ -1404,6 +1413,56 @@ struct RangeDistribution {
     let count: Int
     let percentage: Double
     let color: Color
+}
+
+// MARK: - Pair Card View
+
+struct PairCard: View {
+    let pair: NumberPair
+
+    var body: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 8) {
+                LottoBall(number: pair.first, size: 36)
+                Image(systemName: "plus")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                LottoBall(number: pair.second, size: 36)
+            }
+
+            VStack(spacing: 2) {
+                Text("\(pair.appearances)회")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+
+                Text("\(String(format: "%.1f", pair.frequency))%")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+
+            // 출현 강도 표시
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(height: 4)
+
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(
+                            pair.appearances > 5 ? Color.red :
+                            pair.appearances > 3 ? Color.orange :
+                            Color.blue
+                        )
+                        .frame(width: geometry.size.width * min(CGFloat(pair.frequency) / 20.0, 1.0), height: 4)
+                }
+            }
+            .frame(height: 4)
+        }
+        .padding(10)
+        .background(Color.white.opacity(0.8))
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.05), radius: 2)
+    }
 }
 
 #Preview {

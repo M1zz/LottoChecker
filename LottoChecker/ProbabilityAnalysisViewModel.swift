@@ -2,6 +2,24 @@ import Foundation
 import SwiftUI
 
 // MARK: - Data Models
+struct NumberPair: Identifiable, Hashable {
+    let id = UUID()
+    let first: Int
+    let second: Int
+    let appearances: Int
+    let frequency: Double
+    let rounds: [Int] // 출현한 회차들
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(first)
+        hasher.combine(second)
+    }
+
+    static func == (lhs: NumberPair, rhs: NumberPair) -> Bool {
+        lhs.first == rhs.first && lhs.second == rhs.second
+    }
+}
+
 struct NumberTrend: Identifiable {
     let id = UUID()
     let number: Int
@@ -65,6 +83,7 @@ struct RecommendedCombination: Identifiable, Codable {
 @MainActor
 class ProbabilityAnalysisViewModel: ObservableObject {
     @Published var numberTrends: [NumberTrend] = []
+    @Published var numberPairs: [NumberPair] = []
     @Published var recommendedCombinations: [RecommendedCombination] = []
     @Published var savedCombinations: [RecommendedCombination] = []
     @Published var isAnalyzing = false
@@ -90,6 +109,7 @@ class ProbabilityAnalysisViewModel: ObservableObject {
 
             var allNumbers = Array(repeating: 0, count: 46) // 인덱스 0은 사용 안함
             var recentData: [[Bool]] = Array(repeating: Array(repeating: false, count: 10), count: 46)
+            var pairCounts: [String: (count: Int, rounds: [Int])] = [:]
 
             for round in startRound...latestRound {
                 do {
@@ -98,6 +118,21 @@ class ProbabilityAnalysisViewModel: ObservableObject {
                     // 번호별 출현 횟수 카운트
                     for number in lottoData.numbers {
                         allNumbers[number] += 1
+                    }
+
+                    // 페어 분석 - 모든 2개 조합 카운트
+                    let sortedNumbers = lottoData.numbers.sorted()
+                    for i in 0..<sortedNumbers.count {
+                        for j in (i+1)..<sortedNumbers.count {
+                            let pairKey = "\(sortedNumbers[i])-\(sortedNumbers[j])"
+                            if var pairData = pairCounts[pairKey] {
+                                pairData.count += 1
+                                pairData.rounds.append(round)
+                                pairCounts[pairKey] = pairData
+                            } else {
+                                pairCounts[pairKey] = (count: 1, rounds: [round])
+                            }
+                        }
                     }
 
                     // 최근 10회차 데이터 저장
@@ -148,8 +183,25 @@ class ProbabilityAnalysisViewModel: ObservableObject {
                 ))
             }
 
+            // 페어 데이터 처리
+            var pairs: [NumberPair] = []
+            for (pairKey, pairData) in pairCounts {
+                let components = pairKey.split(separator: "-").compactMap { Int($0) }
+                if components.count == 2 {
+                    let frequency = Double(pairData.count) / Double(selectedTimeRange)
+                    pairs.append(NumberPair(
+                        first: components[0],
+                        second: components[1],
+                        appearances: pairData.count,
+                        frequency: frequency * 100, // 백분율로 변환
+                        rounds: pairData.rounds.sorted()
+                    ))
+                }
+            }
+
             await MainActor.run {
                 self.numberTrends = trends.sorted { $0.deviation > $1.deviation }
+                self.numberPairs = pairs.sorted { $0.appearances > $1.appearances }
                 self.generateRecommendations()
                 self.isAnalyzing = false
             }

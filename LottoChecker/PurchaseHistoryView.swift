@@ -5,7 +5,6 @@ struct PurchaseHistoryView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \PurchaseHistory.purchaseDate, order: .reverse) private var purchases: [PurchaseHistory]
     @State private var showingAddSheet = false
-    @State private var showingQRScanner = false
     @State private var showingStatistics = false
     @State private var selectedRound: Int?
 
@@ -46,12 +45,6 @@ struct PurchaseHistoryView: View {
                         }
 
                         Button {
-                            showingQRScanner = true
-                        } label: {
-                            Label("QR 스캔", systemImage: "qrcode.viewfinder")
-                        }
-
-                        Button {
                             showingStatistics = true
                         } label: {
                             Label("상세 통계", systemImage: "chart.bar.fill")
@@ -64,11 +57,6 @@ struct PurchaseHistoryView: View {
             }
             .sheet(isPresented: $showingAddSheet) {
                 AddPurchaseView()
-            }
-            .fullScreenCover(isPresented: $showingQRScanner) {
-                QRCodeScannerView(isPresented: $showingQRScanner) { numbers in
-                    handleScannedNumbers(numbers)
-                }
             }
             .sheet(isPresented: $showingStatistics) {
                 PurchaseStatisticsView(purchases: purchases)
@@ -95,20 +83,6 @@ struct PurchaseHistoryView: View {
                 .multilineTextAlignment(.center)
 
             HStack(spacing: 15) {
-                Button {
-                    showingQRScanner = true
-                } label: {
-                    VStack {
-                        Image(systemName: "qrcode.viewfinder")
-                            .font(.largeTitle)
-                        Text("QR 스캔")
-                            .font(.caption)
-                    }
-                    .frame(width: 100, height: 100)
-                    .background(Color.blue.opacity(0.1))
-                    .cornerRadius(15)
-                }
-
                 Button {
                     showingAddSheet = true
                 } label: {
@@ -242,28 +216,6 @@ struct PurchaseHistoryView: View {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         return formatter.string(from: NSNumber(value: number)) ?? "\(number)"
-    }
-
-    private func handleScannedNumbers(_ numbers: [Int]) {
-        // QR로 스캔한 번호 추가 (회차는 사용자가 선택해야 함)
-        // 여기서는 임시로 현재 회차를 사용
-        Task {
-            do {
-                let service = LottoService.shared
-                let latestRound = try await service.getLatestRound()
-
-                await MainActor.run {
-                    let purchase = PurchaseHistory(
-                        round: latestRound,
-                        numbers: numbers,
-                        purchaseMethod: "QR스캔"
-                    )
-                    modelContext.insert(purchase)
-                }
-            } catch {
-                print("회차 정보 가져오기 실패: \(error)")
-            }
-        }
     }
 
     private func checkAllPurchases() {
